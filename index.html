@@ -85,6 +85,9 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 
 <div class="panel"><h3 style="font-size:1.1rem;margin-bottom:6px">Whole church at a glance</h3><div id="overview"></div></div>
 
+<details class="panel how"><summary>The agricultural leader’s checklist</summary>
+  <p><b>Soil preparation:</b> assess readiness and the relational climate before launching anything. <b>Seed selection:</b> clear, biblical, reproducible discipleship outcomes. <b>Seasonality and patience:</b> sustainable rhythms that respect God’s timing. <b>Continuous cultivation and weeding:</b> pastoral care, accountability, and pruning. <b>Reciprocal yield:</b> measure success by how many reproducers are trained, not just seating capacity.</p>
+  <p>1 Corinthians 3:6: we plant and water; God makes it grow.</p></details>
 <details class="panel how">
   <summary>How the evaluation works</summary>
   <p>Change % = (new − base) ÷ base × 100. An environment’s verdict uses the average change across the categories you filled in.</p>
@@ -106,21 +109,31 @@ const ENVS=[
 {id:"staff",name:"Church Staff",f:["Interns","Junior Pastors 1","Junior Pastors 2","Assistant Pastors","Associate Pastors","Lead Pastors"],water:"mentoring, pastoral care of the staff, and a clear development pathway"}];
 const UNIT={monthly:"month",quarterly:"quarter","semi-annual":"half-year",annual:"year"};
 const SUG={
-declining:{pray:"Before analyzing anything, bring this number to God. Ask Him what He is saying through it, and listen before you act. Invite your leaders to pray and discern together, and resist the urge to blame.",
-do:["Reach out personally to people who have drifted: a call, a visit, a listening ear.","Look honestly for barriers: timing, leadership gaps, burnout, unclear next steps.","Encourage and thank your workers; ease heavy loads where you can.","Simplify. Do fewer things well instead of many things thinly."],
-god:"Only God renews hearts, draws people, and breathes life into weary communities. Plant and water faithfully, then rest in His timing."},
-plateauing:{pray:"Pray for fresh vision and honest eyes. Ask whether this season is a needed rest, a time of deepening, or a sign of comfort. Wait for His leading before launching anything new.",
-do:["Keep faithfully doing the basics: prayer, the Word, care, and invitation.","Pick one small, specific next step instead of a big program.","Invest in equipping a few people deeply.","Ask newcomers and long-timers what helps or hinders their next step."],
-god:"Growth is not on our calendar. God gives the increase when and how He wills; our part is to stay faithful while we wait."},
+declining:{pray:"Before analyzing anything, bring this number to God. Ask what He is saying through it, and listen before you act. Invite your leaders to pray and discern together, and resist the urge to panic or blame.",
+lens:[["Soil preparation","Check the heart condition and culture: apathy, hidden friction, and the level of trust and transparency."],["Continuous cultivation and weeding","Neglected fields get choked. Look for distractions, unhealthy habits, or missing pastoral care and accountability (John 15)."],["Humility in a dry season","Roots may be forming underground. Panic is the temptation; holy patience is the response."]],
+do:["Reach out personally to people who have drifted: a call, a visit, a listening ear.","Address relational friction and rebuild trust before launching anything new.","Prune what distracts, and strengthen care for workers who are tired.","Simplify. Do fewer things well."],
+track:"Relational health and soil quality (trust, conflict resolution, unity) and leader burnout, before attendance.",
+god:"Only God breathes life into a seed or a weary community. Plant and water faithfully, then rest in His timing."},
+plateauing:{pray:"Pray for fresh vision and honest eyes. Ask whether this is a needed season of rest, a time of deepening, or a sign of comfort. Wait for His leading before launching anything new.",
+lens:[["Seasonality and patience","Growth follows God’s timeline, not our quarterly metrics. Some seasons are underground ones."],["Seed selection","Check that each program has a clear disciple-making outcome, not just attendance or program consumption."],["Soil preparation","Ask whether the culture is receptive and grace-soaked enough for the next step."]],
+do:["Keep faithfully doing the basics: prayer, the Word, care, and invitation.","Choose one small, specific, reproducible next step instead of a big program.","Invest deeply in a few faithful people.","Build rhythms that respect God’s timing and avoid burnout."],
+track:"Underground root development: Bible study engagement, consistency in prayer, and character growth over time.",
+god:"Germination under the soil is God’s exclusive work. We cannot force the seed to sprout; we stay faithful while we wait."},
 growing:{pray:"Give thanks first. Pray for wisdom to steward what God is doing, and for humility so the credit stays where it belongs.",
+lens:[["Continuous cultivation and weeding","Growth brings weeds. Keep up pastoral care, correction, and accountability as numbers rise."],["Collaborative labor","One plants, another waters. Make room for a relay team and avoid lone-ranger leadership or territorialism."],["Seed selection","Keep the outcome on disciples and leaders, not seating capacity."]],
 do:["Make sure new people are welcomed, connected, and followed up.","Train and support workers before the load becomes too heavy.","Protect depth: keep discipleship growing alongside numbers.","Celebrate stories of changed lives with the whole church."],
+track:"Discipleship reproduction rate: how many are making other disciples, not just how many attend.",
 god:"We planted and watered, but God gave the growth. Receive it with gratitude and hold it loosely."},
 reproducing:{pray:"This is cause for deep thanksgiving. Pray and discern carefully before adding structures or launching new things. Ask God who He is raising up, and for what.",
+lens:[["Law of reciprocal yield","A seed that dies yields many seeds. Healthy ministry is reproductive: equip every believer to make disciple-makers."],["Seed selection","Teach and model disciple-making and leadership development so what multiplies is healthy."],["Collaborative labor","Let others plant and water too, so the work does not depend on one leader."]],
 do:["Identify and mentor emerging leaders who can multiply the work.","Consider starting or sending new groups, with prayer and clear preparation.","Strengthen care so people are not lost in the rush.","Document what is working so it can be passed on."],
-god:"Doubling is beyond any plan of ours. It is the Lord who builds. Stay close to Him so that you keep following rather than racing ahead."},
-multiplying:{pray:"Fall on your knees in gratitude and ask for wisdom, humility, and endurance. Rapid, compounding growth needs spiritual depth to hold it.",
-do:["Build the leadership pipeline: every new leader should be coaching another.","Guard the health of leaders and staff against exhaustion.","Keep discipleship and doctrine strong so the roots keep pace with the fruit.","Plan for sustainable structures: care, finances, and space."],
-god:"This kind of momentum is a gift only God can give. Stay dependent on Him, steward it well, and give Him all the glory."}};
+track:"Reproducers trained: leaders and disciple-makers raised up, not just seats filled.",
+god:"Doubling is beyond any plan of ours. It is the Lord who builds. Do not try to be the Holy Spirit; stay close to Him and follow."},
+multiplying:{pray:"Fall on your knees in gratitude and ask for wisdom, humility, and endurance. Compounding growth needs spiritual depth to hold it.",
+lens:[["Law of reciprocal yield","Disciples are now producing disciples. Invest deeply so each generation is healthy."],["Releasing the burden of manufacture","Leaders burn out trying to manufacture growth. Our task is faithful obedience; the miracle belongs to God."],["Seasonality and patience","Even a big harvest is followed by a new season. Build rhythms that last."]],
+do:["Build the leadership pipeline: every new leader should be coaching another.","Guard the health of leaders and staff: sabbath, rest, and team collaboration.","Keep discipleship and doctrine strong so roots keep pace with fruit.","Plan sustainable structures: care, finances, and space."],
+track:"Sustainable leadership rhythms (burnout, sabbath practice, collaboration) alongside the reproduction rate.",
+god:"This momentum is a gift only God can give. Stay dependent on Him, steward it well, and give Him the glory."}};
 const LABEL={declining:"Declining",plateauing:"Plateauing",growing:"Growing",reproducing:"Reproducing",multiplying:"Multiplying"};
 
 let S={tf:"quarterly",th:10,env:"congregation",site:"SWC 1",y:new Date().getFullYear(),per:Math.floor(new Date().getMonth()/3)+1,code:"",name:""};
@@ -209,9 +222,12 @@ function renderResult(){
     <p class="muted">${doubling(a.avg)} ${focus}</p></div>
   <div class="panel sug"><h3 style="margin-top:0">Pray and discern first</h3>
     <div class="pray">${s.pray}</div>
+    <h3>Through a farmer’s eyes</h3>
+    <ul>${s.lens.map(x=>`<li><b>${x[0]}.</b> ${x[1]}</li>`).join("")}</ul>
     <h3>What we can do: plant and water</h3>
     <ul>${s.do.map(t=>`<li>${t}</li>`).join("")}<li>Focus on ${env.water}.</li></ul>
     <h3>What only God can do</h3><p style="margin:4px 0 0">${s.god}</p>
+    <h3>What to watch beyond headcount</h3><p style="margin:4px 0 0">${s.track}</p>
     <p class="muted" style="margin-top:12px">1 Corinthians 3:6–7: Paul planted, Apollos watered, but God gave the growth. So the one who plants and the one who waters are nothing; God alone matters, because He makes things grow.</p></div>`;
 }
 function renderOverview(){

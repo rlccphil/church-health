@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#36533A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Church Health Check</title>
+<link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon-192.png"><link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:wght@500;700&family=Figtree:wght@400;500;600&display=swap">
+<style>
+:root{--bg:#F2F4F3;--card:#FFFFFF;--ink:#16293C;--mute:#5B6B7A;--line:#D9E0DE;--acc:#36533A;--gold:#B8892B;
+--dec:#A8473F;--pla:#6B7A8C;--gro:#2F7D4F;--rep:#36533A;--mul:#8A5FB8;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#0F1A25;--card:#17283A;--ink:#E8EEF2;--mute:#9FB0BE;--line:#2A3F54;--acc:#8FC094;--gold:#E0B25A;--dec:#E3817A;--pla:#9AA9B8;--gro:#6FC490;--rep:#8FC094;--mul:#B896E0}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#0F1A25;--card:#17283A;--ink:#E8EEF2;--mute:#9FB0BE;--line:#2A3F54;--acc:#8FC094;--gold:#E0B25A;--dec:#E3817A;--pla:#9AA9B8;--gro:#6FC490;--rep:#8FC094;--mul:#B896E0}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 Figtree,system-ui,sans-serif}
+main{max-width:720px;margin:0 auto;padding:16px 16px 48px}
+h1,h2,h3{font-family:Literata,Georgia,serif;margin:0;line-height:1.25}
+h1{font-size:1.6rem}
+.sub{color:var(--mute);margin:4px 0 16px}
+.bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.bar label{flex:1;min-width:140px;font-size:.85rem;color:var(--mute)}
+select,input{width:100%;font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:9px 10px}
+select:focus,input:focus,button:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:4px 0 10px;scrollbar-width:thin}
+.chip{flex:none;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:7px 14px;font:500 .92rem Figtree,sans-serif;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chips.small .chip{padding:5px 12px;font-size:.85rem}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:14px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:8px 10px;padding:12px 0;border-top:1px solid var(--line)}
+.row:first-of-type{border-top:0}
+.row .nm{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;font-weight:600}
+.row label{font-size:.8rem;color:var(--mute)}
+.row details{grid-column:1/-1}
+.row summary{font-size:.85rem;color:var(--acc);cursor:pointer}
+.row details label{display:block;margin-top:6px}
+.pct{font:600 .9rem Figtree,sans-serif;padding:2px 10px;border-radius:999px;background:var(--bg);color:var(--mute);white-space:nowrap}
+.v-declining{--vc:var(--dec)}.v-plateauing{--vc:var(--pla)}.v-growing{--vc:var(--gro)}.v-reproducing{--vc:var(--rep)}.v-multiplying{--vc:var(--mul)}
+.pct[class*="v-"]{background:color-mix(in srgb,var(--vc) 16%,transparent);color:var(--vc)}
+.verdict{border-left:6px solid var(--vc);}
+.verdict h2{font-size:1.9rem;color:var(--vc)}
+.verdict p{margin:4px 0}
+.muted{color:var(--mute);font-size:.9rem}
+.sug h3{font-size:1.05rem;margin:14px 0 4px}
+.sug ul{margin:4px 0 0;padding-left:20px}
+.pray{background:color-mix(in srgb,var(--gold) 14%,var(--card));border:1px solid var(--gold);border-radius:12px;padding:12px 14px;margin:8px 0 0}
+.ov{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid var(--line);align-items:center}
+.ov:first-child{border-top:0}
+details.how{font-size:.9rem;color:var(--mute)}
+details.how summary{cursor:pointer;color:var(--acc);font-weight:500}
+button.link{background:none;border:0;color:var(--acc);font:500 .9rem Figtree,sans-serif;cursor:pointer;padding:6px 0}
+@media (min-width:560px){.row{grid-template-columns:1fr 1fr 1fr}.row .nm{grid-column:1/-1}.row .first{display:none}}
+.top{background:#36533A;padding:14px 16px;display:flex;justify-content:center}.top img{width:280px;max-width:80%;height:auto}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:#36533A;z-index:10}
+.panel label{display:block;margin-top:8px;font-size:.85rem;color:var(--mute)}.panel[hidden]{display:none}
+.tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+</style>
+</head>
+<body>
+<header class="top"><img src="rlcc-logo-white.png" alt="Real Life Christian Communities"></header>
+<main>
+<h1>Church Health Check</h1>
+<p class="sub">Compare two numbers, see the change, then pray over what it means.</p>
+
+<div class="bar">
+  <label>Time frame
+    <select id="tf"><option value="monthly">Monthly</option><option value="quarterly" selected>Quarterly</option><option value="semi-annual">Semi-annual</option><option value="annual">Annual</option></select>
+  </label>
+  <label>Growth or decline threshold
+    <select id="th"><option value="10" selected>10% or more</option><option value="15">15% or more</option></select>
+  </label>
+</div>
+
+<div class="bar"><label>Year<input id="yr" type="number" min="2020" max="2100"></label><label>Period<select id="per"></select></label></div>
+<div class="panel" id="gate" hidden><h3>Unlock shared data</h3><p class="muted">Enter the church access code and your name.</p><label>Access code<input id="code" type="password" autocomplete="off"></label><label>Your name<input id="nm"></label><p><button class="chip" id="unlock">Unlock</button></p></div>
+<div class="chips" id="envs" role="group" aria-label="Relational environment"></div>
+<div class="chips small" id="sites" role="group" aria-label="Congregation site"></div>
+
+<div class="panel" id="inputs"></div>
+<div class="tools"><button class="chip" id="savebtn">Save for everyone</button><button class="chip" id="fillbtn">Fill base from last period</button><span class="muted" id="sync"></span></div>
+<div id="result"></div>
+
+<div class="panel"><h3 style="font-size:1.1rem;margin-bottom:6px">Whole church at a glance</h3><div id="overview"></div></div>
+
+<details class="panel how">
+  <summary>How the evaluation works</summary>
+  <p>Change % = (new − base) ÷ base × 100. An environment’s verdict uses the average change across the categories you filled in.</p>
+  <p><b>Declining</b>: down by the threshold or more. <b>Plateauing</b>: no change, or change smaller than the threshold. <b>Growing</b>: up by the threshold or more. <b>Reproducing</b>: up 100% or more (the number doubled). <b>Multiplying</b>: growth that compounds, meaning growth on top of growth.</p>
+  <p><b>Measuring compounding:</b> open “Add the earlier period” on any row and enter the number from the period before your base. If both periods grew by the threshold or more, the growth is compounding, and the verdict becomes Multiplying. The Rule of 72 then estimates doubling time: 72 ÷ growth rate per period. For example, 12% growth each quarter doubles in about 6 quarters.</p>
+  <p>Numbers are a tool for discernment, not a verdict on anyone’s faithfulness.</p>
+</details>
+<button class="link" id="reset">Reload shared data</button>
+</main>
+
+<script>
+const ENVS=[
+{id:"congregation",name:"Congregation",sites:["SWC 1","SWC 2","Online"],f:["Visitors","Regular Attendees","Kids","SHARP Workers"],water:"welcome, follow-up of visitors, and equipping workers"},
+{id:"community",name:"Community",f:["New Contacts","Regular Attendees","SHARP Workers"],water:"personal invitations, hospitality, and caring for workers"},
+{id:"circles",name:"Circles",f:["Number of Circles","New Contacts","Regular Attendees","SHARP Workers"],water:"circle leader coaching, invitations, and healthy group rhythms"},
+{id:"companionships",name:"Companionships",f:["Number of CARE-givers","Number of CARE-receivers"],water:"training CARE-givers and matching them with those who need care"},
+{id:"communion",name:"Communion",f:["Participants in spiritual formation activities"],water:"inviting people to gatherings and retreats, and following up afterward"},
+{id:"core",name:"Core Leaders",f:["TAG Trainees","Supervisors","Circle Leaders","Task Group Leaders","Community Overseers","Ministry Coordinators"],water:"identifying, training, and encouraging emerging leaders"},
+{id:"staff",name:"Church Staff",f:["Interns","Junior Pastors 1","Junior Pastors 2","Assistant Pastors","Associate Pastors","Lead Pastors"],water:"mentoring, pastoral care of the staff, and a clear development pathway"}];
+const UNIT={monthly:"month",quarterly:"quarter","semi-annual":"half-year",annual:"year"};
+const SUG={
+declining:{pray:"Before analyzing anything, bring this number to God. Ask Him what He is saying through it, and listen before you act. Invite your leaders to pray and discern together, and resist the urge to blame.",
+do:["Reach out personally to people who have drifted: a call, a visit, a listening ear.","Look honestly for barriers: timing, leadership gaps, burnout, unclear next steps.","Encourage and thank your workers; ease heavy loads where you can.","Simplify. Do fewer things well instead of many things thinly."],
+god:"Only God renews hearts, draws people, and breathes life into weary communities. Plant and water faithfully, then rest in His timing."},
+plateauing:{pray:"Pray for fresh vision and honest eyes. Ask whether this season is a needed rest, a time of deepening, or a sign of comfort. Wait for His leading before launching anything new.",
+do:["Keep faithfully doing the basics: prayer, the Word, care, and invitation.","Pick one small, specific next step instead of a big program.","Invest in equipping a few people deeply.","Ask newcomers and long-timers what helps or hinders their next step."],
+god:"Growth is not on our calendar. God gives the increase when and how He wills; our part is to stay faithful while we wait."},
+growing:{pray:"Give thanks first. Pray for wisdom to steward what God is doing, and for humility so the credit stays where it belongs.",
+do:["Make sure new people are welcomed, connected, and followed up.","Train and support workers before the load becomes too heavy.","Protect depth: keep discipleship growing alongside numbers.","Celebrate stories of changed lives with the whole church."],
+god:"We planted and watered, but God gave the growth. Receive it with gratitude and hold it loosely."},
+reproducing:{pray:"This is cause for deep thanksgiving. Pray and discern carefully before adding structures or launching new things. Ask God who He is raising up, and for what.",
+do:["Identify and mentor emerging leaders who can multiply the work.","Consider starting or sending new groups, with prayer and clear preparation.","Strengthen care so people are not lost in the rush.","Document what is working so it can be passed on."],
+god:"Doubling is beyond any plan of ours. It is the Lord who builds. Stay close to Him so that you keep following rather than racing ahead."},
+multiplying:{pray:"Fall on your knees in gratitude and ask for wisdom, humility, and endurance. Rapid, compounding growth needs spiritual depth to hold it.",
+do:["Build the leadership pipeline: every new leader should be coaching another.","Guard the health of leaders and staff against exhaustion.","Keep discipleship and doctrine strong so the roots keep pace with the fruit.","Plan for sustainable structures: care, finances, and space."],
+god:"This kind of momentum is a gift only God can give. Stay dependent on Him, steward it well, and give Him all the glory."}};
+const LABEL={declining:"Declining",plateauing:"Plateauing",growing:"Growing",reproducing:"Reproducing",multiplying:"Multiplying"};
+
+let S={tf:"quarterly",th:10,env:"congregation",site:"SWC 1",y:new Date().getFullYear(),per:Math.floor(new Date().getMonth()/3)+1,code:"",name:""};
+try{const x=localStorage.getItem("chc-v2");if(x)S=Object.assign(S,JSON.parse(x))}catch(e){}
+const $=id=>document.getElementById(id);
+const E=id=>ENVS.find(e=>e.id===id);
+const save=()=>{try{localStorage.setItem("chc-v2",JSON.stringify(S))}catch(e){}};
+const key=(env,site)=>env+"|"+(site||"-");
+const num=v=>(v===""||v==null||isNaN(+v))?null:+v;
+const pctOf=(b,n)=>(b==null||n==null||b<=0)?null:(n-b)/b*100;
+const fmt=p=>(p>0?"+":"")+(Math.round(p*10)/10)+"%";
+
+function verdict(p,pp){
+  const t=S.th;
+  if(p==null)return null;
+  if(pp!=null&&p>=t&&pp>=t)return"multiplying";
+  if(p>=100)return"reproducing";
+  if(p>=t)return"growing";
+  if(p<=-t)return"declining";
+  return"plateauing";
+}
+function analyze(env,sites){
+  const out=env.f.map(name=>{
+    let b=0,n=0,p=0,hb=false,hn=false,hp=false;
+    sites.forEach(s=>{const d=get(env.id,s,name);
+      const B=num(d.b),N=num(d.n),P=num(d.p);
+      if(B!=null){b+=B;hb=true} if(N!=null){n+=N;hn=true} if(P!=null){p+=P;hp=true}});
+    const bb=hb?b:null,nn=hn?n:null,pr=hp?p:null;
+    const pc=pctOf(bb,nn);
+    const prior=(hp&&hb)?pctOf(pr,bb):null;
+    return{name,b:bb,n:nn,pc,prior,isNew:(bb===0&&nn>0),entered:(hb&&hn)};
+  });
+  const used=out.filter(x=>x.pc!=null);
+  if(!used.length)return{rows:out,v:null};
+  const avg=used.reduce((a,x)=>a+x.pc,0)/used.length;
+  const pri=used.filter(x=>x.prior!=null);
+  const avgPrior=pri.length?pri.reduce((a,x)=>a+x.prior,0)/pri.length:null;
+  return{rows:out,avg,avgPrior,v:verdict(avg,avgPrior),used};
+}
+
+function renderTop(){renderPeriod();
+  $("tf").value=S.tf;$("th").value=String(S.th);
+  $("envs").innerHTML=ENVS.map(e=>`<button class="chip" data-env="${e.id}" aria-pressed="${e.id===S.env}">${e.name}</button>`).join("");
+  const env=E(S.env);
+  $("sites").style.display=env.sites?"flex":"none";
+  $("sites").innerHTML=env.sites?env.sites.map(s=>`<button class="chip" data-site="${s}" aria-pressed="${s===S.site}">${s}</button>`).join(""):"";
+}
+function renderInputs(){
+  const env=E(S.env),k=key(env.id,env.sites?S.site:null);
+  const u=UNIT[S.tf];
+  $("inputs").innerHTML=`<h3 style="margin-bottom:2px">${env.name}${env.sites?" · "+S.site:""}</h3><div class="muted">Enter your base number and your new number for this ${u}.</div>`+
+  env.f.map((f,i)=>{const r=get(env.id,env.sites?S.site:null,f);return`<div class="row" data-f="${i}">
+    <div class="nm"><span>${f}</span><span class="pct" id="pc${i}">–</span></div>
+    <label>Base<input inputmode="numeric" type="number" min="0" step="1" data-k="b" value="${r.b??""}"></label>
+    <label>New<input inputmode="numeric" type="number" min="0" step="1" data-k="n" value="${r.n??""}"></label>
+    <details><summary>Add the earlier period (optional)</summary><label>Number from one ${u} before the base<input inputmode="numeric" type="number" min="0" step="1" data-k="p" value="${r.p??""}"></label></details></div>`}).join("");
+}
+function badge(el,x){
+  const v=x.isNew?"growing":verdict(x.pc,x.prior);
+  el.className="pct"+(v?" v-"+v:"");
+  el.textContent=x.isNew?"New start":x.pc==null?"–":fmt(x.pc);
+}
+function doubling(p){
+  if(p==null||p<=0)return"";
+  const per=72/p;
+  return`Rule of 72: at this pace the number doubles in about ${per<10?Math.round(per*10)/10:Math.round(per)} ${UNIT[S.tf]}s.`;
+}
+function renderResult(){
+  const env=E(S.env),sites=env.sites?[S.site]:[null];
+  const a=analyze(env,sites);
+  a.rows.forEach((x,i)=>badge($("pc"+i),x));
+  const el=$("result");
+  if(!a.v){el.innerHTML=`<div class="panel muted">Enter a base and new number (base above zero) to see the evaluation.</div>`;return}
+  const s=SUG[a.v];
+  const top=[...a.used].sort((x,y)=>y.pc-x.pc);
+  let focus="";
+  if(top.length>1){
+    if(a.v==="declining"||a.v==="plateauing"){const w=top[top.length-1];if(w.pc<0)focus=`Biggest drop: <b>${w.name}</b> (${fmt(w.pc)}). Start your prayer there.`}
+    else{const g=top[0];focus=`Strongest gain: <b>${g.name}</b> (${fmt(g.pc)}). Give thanks for it.`}
+  }
+  const comp=a.avgPrior!=null?` Earlier period average: ${fmt(a.avgPrior)}.`:"";
+  el.innerHTML=`<div class="panel verdict v-${a.v}">
+    <div class="muted">${env.name}${env.sites?" · "+S.site:""}, ${S.tf}</div>
+    <h2>${LABEL[a.v]}</h2>
+    <p>Average change across ${a.used.length} categor${a.used.length>1?"ies":"y"}: <b>${fmt(a.avg)}</b>.${comp}</p>
+    <p class="muted">${doubling(a.avg)} ${focus}</p></div>
+  <div class="panel sug"><h3 style="margin-top:0">Pray and discern first</h3>
+    <div class="pray">${s.pray}</div>
+    <h3>What we can do: plant and water</h3>
+    <ul>${s.do.map(t=>`<li>${t}</li>`).join("")}<li>Focus on ${env.water}.</li></ul>
+    <h3>What only God can do</h3><p style="margin:4px 0 0">${s.god}</p>
+    <p class="muted" style="margin-top:12px">1 Corinthians 3:6–7: Paul planted, Apollos watered, but God gave the growth. So the one who plants and the one who waters are nothing; God alone matters, because He makes things grow.</p></div>`;
+}
+function renderOverview(){
+  $("overview").innerHTML=ENVS.map(e=>{
+    const a=analyze(e,e.sites||[null]);
+    const v=a.v;
+    return`<div class="ov"><span>${e.name}${e.sites?` <span class="muted">(all sites)</span>`:""}</span><span class="pct${v?" v-"+v:""}">${v?LABEL[v]+" "+fmt(a.avg):"No data yet"}</span></div>`}).join("");
+}
+function all(){renderResult();renderOverview();save()}
+
+document.addEventListener("click",e=>{
+  const c=e.target.closest("[data-env],[data-site]");if(!c)return;
+  if(c.dataset.env){S.env=c.dataset.env;S.site=E(S.env).sites?E(S.env).sites[0]:S.site}
+  if(c.dataset.site)S.site=c.dataset.site;
+  renderTop();renderInputs();all();
+});
+$("inputs").addEventListener("input",e=>{
+  const i=e.target.closest("input");if(!i)return;
+  const env=E(S.env),s=env.sites?S.site:null,f=env.f[+i.closest(".row").dataset.f];
+  ref(env.id,s,f)[i.dataset.k]=i.value;dirty[pk(env.id,s,f)]=1;all();
+});
+$("tf").onchange=e=>{S.tf=e.target.value;S.per=Math.min(S.per,PN[S.tf]);renderTop();renderInputs();all()};
+$("th").onchange=e=>{S.th=+e.target.value;all()};
+$("reset").onclick=()=>load();
+const API="https://script.google.com/macros/s/AKfycbyQqFStWoRbq4Hkl992-cd5S5qumdUcw0sDDYD22Q7JEzbqFjWOv0FDs1F9N6ghYwf1/exec";
+const PN={monthly:12,quarterly:4,"semi-annual":2,annual:1};
+const MN=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+let D={},dirty={};
+const pLabel=(y,tf,p)=>tf==="monthly"?y+"-M"+String(p).padStart(2,"0"):tf==="quarterly"?y+"-Q"+p:tf==="semi-annual"?y+"-H"+p:""+y;
+function prevKey(){let y=S.y,p=S.per-1;if(p<1){y--;p=PN[S.tf]}return pLabel(y,S.tf,p)}
+function pk(e,s,c,per){return[per||pLabel(S.y,S.tf,S.per),S.tf,e,s||"-",c].join("|")}
+function get(e,s,c){return D[pk(e,s,c)]||{}}
+function ref(e,s,c){const k=pk(e,s,c);return D[k]=D[k]||{}}
+function renderPeriod(){let o="";for(let i=1;i<=PN[S.tf];i++)o+=`<option value="${i}">${S.tf==="monthly"?MN[i-1]:S.tf==="quarterly"?"Q"+i:S.tf==="semi-annual"?"H"+i:"Full year"}</option>`;
+  $("per").innerHTML=o;$("per").value=S.per;$("yr").value=S.y}
+async function api(b){const r=await fetch(API,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(Object.assign({code:S.code},b))});return r.json()}
+function status(t,bad){const s=$("sync");s.textContent=t;s.style.color=bad?"var(--dec)":"var(--mute)"}
+async function load(){
+  if(!S.code||API.startsWith("PASTE")){$("gate").hidden=false;if(API.startsWith("PASTE"))status("Add your web app link to index.html first.",1);return}
+  status("Loading shared data…");
+  try{const r=await api({action:"getAll"});
+    if(!r.ok){status(r.error,1);$("gate").hidden=false;return}
+    const keep={};Object.keys(dirty).forEach(k=>keep[k]=D[k]);D={};
+    r.rows.forEach(x=>{D[[x.period,x.tf,x.env,x.site,x.cat].join("|")]={b:x.b,n:x.n,p:x.p}});
+    Object.assign(D,keep);$("gate").hidden=true;renderInputs();all();status("Shared data is up to date.")
+  }catch(e){status("Can’t reach the server. Check your connection and the web app link.",1)}}
+async function saveShared(){
+  const rows=Object.keys(dirty).map(k=>{const a=k.split("|"),v=D[k]||{};return{period:a[0],tf:a[1],env:a[2],site:a[3],cat:a[4],b:v.b??"",n:v.n??"",p:v.p??""}});
+  if(!rows.length){status("Nothing new to save.");return}
+  status("Saving…");
+  try{const r=await api({action:"save",by:S.name,rows});if(r.ok){dirty={};status("Saved for everyone.")}else status(r.error,1)}catch(e){status("Couldn’t save. Try again.",1)}}
+function fillPrev(){const env=E(S.env),s=env.sites?S.site:null;
+  env.f.forEach(f=>{const v=D[pk(env.id,s,f,prevKey())];if(!v)return;const r=ref(env.id,s,f);
+    if(v.n!=null&&v.n!=="")r.b=v.n;if(v.b!=null&&v.b!=="")r.p=v.b;dirty[pk(env.id,s,f)]=1});renderInputs();all()}
+$("yr").onchange=e=>{S.y=+e.target.value||S.y;renderInputs();all()};
+$("per").onchange=e=>{S.per=+e.target.value;renderInputs();all()};
+$("savebtn").onclick=saveShared;$("fillbtn").onclick=fillPrev;
+$("unlock").onclick=()=>{S.code=$("code").value.trim();S.name=$("nm").value.trim();save();load()};
+renderTop();renderInputs();all();load();
+if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
+</script>
+</body>
+</html>

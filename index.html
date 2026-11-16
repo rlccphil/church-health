@@ -190,7 +190,7 @@ function renderInputs(){
     <div class="nm"><span>${f}</span><span class="pct" id="pc${i}">–</span></div>
     <label>Base<input inputmode="numeric" type="number" min="0" step="1" data-k="b" value="${r.b??""}"></label>
     <label>New<input inputmode="numeric" type="number" min="0" step="1" data-k="n" value="${r.n??""}"></label>
-    <details><summary>Add the earlier period (optional)</summary><label>Number from one ${u} before the base<input inputmode="numeric" type="number" min="0" step="1" data-k="p" value="${r.p??""}"></label></details></div>`}).join("");
+    <details><summary>Add the earlier period (optional)</summary><label>Number from one ${u} before the base<input inputmode="numeric" type="number" min="0" step="1" data-k="p" value="${r.p??""}"></label></details><div class="muted src" style="grid-column:1/-1;font-size:.8rem">${dirty[pk(env.id,env.sites?S.site:null,f)]?"Unsaved changes":r.at?"Last saved by "+(r.by||"someone")+" on "+r.at:""}</div></div>`}).join("");
 }
 function badge(el,x){
   const v=x.isNew?"growing":verdict(x.pc,x.prior);
@@ -268,7 +268,7 @@ document.addEventListener("click",e=>{
 $("inputs").addEventListener("input",e=>{
   const i=e.target.closest("input");if(!i)return;
   const env=E(S.env),s=env.sites?S.site:null,f=env.f[+i.closest(".row").dataset.f];
-  ref(env.id,s,f)[i.dataset.k]=i.value;dirty[pk(env.id,s,f)]=1;all();
+  ref(env.id,s,f)[i.dataset.k]=i.value;dirty[pk(env.id,s,f)]=1;const sr=i.closest(".row").querySelector(".src");if(sr)sr.textContent="Unsaved changes";all();
 });
 $("tf").onchange=e=>{S.tf=e.target.value;S.per=Math.min(S.per,PN[S.tf]);renderTop();renderInputs();all()};
 $("th").onchange=e=>{S.th=+e.target.value;all()};
@@ -286,20 +286,20 @@ function renderPeriod(){let o="";for(let i=1;i<=PN[S.tf];i++)o+=`<option value="
   $("per").innerHTML=o;$("per").value=S.per;$("yr").value=S.y}
 async function api(b){const r=await fetch(API,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(Object.assign({code:S.code},b))});return r.json()}
 function status(t,bad){const s=$("sync");s.textContent=t;s.style.color=bad?"var(--dec)":"var(--mute)"}
-async function load(){
+async function load(m){
   if(!S.code||API.startsWith("PASTE")){$("gate").hidden=false;if(API.startsWith("PASTE"))status("Add your web app link to index.html first.",1);return}
   status("Loading shared data…");
   try{const r=await api({action:"getAll"});
     if(!r.ok){status(r.error,1);$("gate").hidden=false;return}
     const keep={};Object.keys(dirty).forEach(k=>keep[k]=D[k]);D={};
-    r.rows.forEach(x=>{D[[x.period,x.tf,x.env,x.site,x.cat].join("|")]={b:x.b,n:x.n,p:x.p}});
-    Object.assign(D,keep);$("gate").hidden=true;renderInputs();all();status("Shared data is up to date.")
+    r.rows.forEach(x=>{D[[x.period,x.tf,x.env,x.site,x.cat].join("|")]={b:x.b,n:x.n,p:x.p,by:x.by,at:x.at}});
+    Object.assign(D,keep);$("gate").hidden=true;renderInputs();all();status(m||"Shared data is up to date.")
   }catch(e){status("Can’t reach the server. Check your connection and the web app link.",1)}}
 async function saveShared(){
   const rows=Object.keys(dirty).map(k=>{const a=k.split("|"),v=D[k]||{};return{period:a[0],tf:a[1],env:a[2],site:a[3],cat:a[4],b:v.b??"",n:v.n??"",p:v.p??""}});
   if(!rows.length){status("Nothing new to save.");return}
   status("Saving…");
-  try{const r=await api({action:"save",by:S.name,rows});if(r.ok){dirty={};status("Saved for everyone.")}else status(r.error,1)}catch(e){status("Couldn’t save. Try again.",1)}}
+  try{const r=await api({action:"save",by:S.name,rows});if(r.ok){dirty={};load("Saved for everyone. The date and time were recorded.")}else status(r.error,1)}catch(e){status("Couldn’t save. Try again.",1)}}
 function fillPrev(){const env=E(S.env),s=env.sites?S.site:null;
   env.f.forEach(f=>{const v=D[pk(env.id,s,f,prevKey())];if(!v)return;const r=ref(env.id,s,f);
     if(v.n!=null&&v.n!=="")r.b=v.n;if(v.b!=null&&v.b!=="")r.p=v.b;dirty[pk(env.id,s,f)]=1});renderInputs();all()}

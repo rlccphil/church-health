@@ -83,6 +83,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 <div class="tools"><button class="chip" id="savebtn">Save for everyone</button><button class="chip" id="fillbtn">Fill base from last period</button><span class="muted" id="sync"></span></div>
 <div id="result"></div>
 
+<div id="overall"></div>
 <div class="panel"><h3 style="font-size:1.1rem;margin-bottom:6px">Whole church at a glance</h3><div id="overview"></div></div>
 
 <details class="panel how"><summary>The agricultural leader’s checklist</summary>
@@ -231,10 +232,30 @@ function renderResult(){
     <p class="muted" style="margin-top:12px">1 Corinthians 3:6–7: Paul planted, Apollos watered, but God gave the growth. So the one who plants and the one who waters are nothing; God alone matters, because He makes things grow.</p></div>`;
 }
 function renderOverview(){
-  $("overview").innerHTML=ENVS.map(e=>{
-    const a=analyze(e,e.sites||[null]);
-    const v=a.v;
+  const rs=ENVS.map(e=>({e,a:analyze(e,e.sites||[null])}));
+  $("overview").innerHTML=rs.map(({e,a})=>{const v=a.v;
     return`<div class="ov"><span>${e.name}${e.sites?` <span class="muted">(all sites)</span>`:""}</span><span class="pct${v?" v-"+v:""}">${v?LABEL[v]+" "+fmt(a.avg):"No data yet"}</span></div>`}).join("");
+  const w=rs.filter(x=>x.a.v),el=$("overall");
+  if(!w.length){el.innerHTML="";return}
+  const avg=w.reduce((t,x)=>t+x.a.avg,0)/w.length;
+  const pr=w.filter(x=>x.a.avgPrior!=null);
+  const avgP=pr.length?pr.reduce((t,x)=>t+x.a.avgPrior,0)/pr.length:null;
+  const v=verdict(avg,avgP),s=SUG[v];
+  const so=[...w].sort((x,y)=>y.a.avg-x.a.avg),hi=so[0],lo=so[so.length-1];
+  const cnt={};w.forEach(x=>cnt[x.a.v]=(cnt[x.a.v]||0)+1);
+  const mix=Object.keys(cnt).map(k=>cnt[k]+" "+LABEL[k].toLowerCase()).join(", ");
+  const part=w.length<ENVS.length?` Only ${w.length} of ${ENVS.length} environments have data for this period, so this is a partial picture.`:"";
+  const pair=w.length>1?`<p class="muted">Strongest: <b>${hi.e.name}</b> (${fmt(hi.a.avg)}). Needs the most care: <b>${lo.e.name}</b> (${fmt(lo.a.avg)}).</p>`:"";
+  const watch=(w.length>1&&lo.a.v==="declining"&&v!=="declining")?`<li>Even in a healthy season, give prayerful attention to <b>${lo.e.name}</b>, which is declining.</li>`:"";
+  el.innerHTML=`<div class="panel verdict v-${v}"><div class="muted">Overall church health, ${S.tf} period ${pLabel(S.y,S.tf,S.per)}</div>
+    <h2>${LABEL[v]}</h2>
+    <p>Average change across ${w.length} environment${w.length>1?"s":""}: <b>${fmt(avg)}</b> (each environment counts equally). Mix: ${mix}.${part}</p>${pair}
+    <p class="muted">${doubling(avg)}</p></div>
+  <div class="panel sug"><h3 style="margin-top:0">Pray and discern first</h3><div class="pray">${s.pray}</div>
+    <h3>Through a farmer’s eyes</h3><ul>${s.lens.map(x=>`<li><b>${x[0]}.</b> ${x[1]}</li>`).join("")}</ul>
+    <h3>What we can do: plant and water</h3><ul>${s.do.map(t=>`<li>${t}</li>`).join("")}${watch}</ul>
+    <h3>What only God can do</h3><p style="margin:4px 0 0">${s.god}</p>
+    <h3>What to watch beyond headcount</h3><p style="margin:4px 0 0">${s.track}</p></div>`;
 }
 function all(){renderResult();renderOverview();save()}
 

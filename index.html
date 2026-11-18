@@ -80,11 +80,15 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 </div>
 
 <div class="bar"><label>Year<input id="yr" type="number" min="2020" max="2100"></label><label>Period<select id="per"></select></label></div>
-<div class="panel" id="gate" hidden><h3>Unlock shared data</h3><p class="muted">Enter the church access code and your name.</p><label>Access code<input id="code" type="password" autocomplete="off"></label><label>Your name<input id="nm"></label><p><button class="chip" id="unlock">Unlock</button></p></div>
+<div class="panel" id="gate" hidden><h3>Unlock shared data</h3><p class="muted">Enter the church access code, your name, your community or ministry, and the date you are encoding.</p><label>Access code<input id="code" type="password" autocomplete="off"></label><label>Your name<input id="nm"></label>
+<label>Community or ministry<input id="unit" list="units" placeholder="Choose or type your own"></label>
+<datalist id="units"><option value="Real Men in Christ (Remix)"><option value="Kindred Hearts (KH)"><option value="One in Christ (OIC)"><option value="Crossroads"><option value="Real Life Youth (RLY)"><option value="Australian Surplus"><option value="Southridge"><option value="No Community Yet"></datalist>
+<label>Date of encoding<input id="edate" type="date"></label><p class="muted" id="gmsg" style="color:var(--dec)"></p><p><button class="chip" id="unlock">Unlock</button></p></div>
 <div class="chips" id="envs" role="group" aria-label="Relational environment"></div>
 <div class="chips small" id="sites" role="group" aria-label="Congregation site"></div>
 
 <div class="panel" id="inputs"></div>
+<div class="muted" id="who" style="margin-bottom:8px" hidden></div>
 <div class="tools"><button class="chip" id="savebtn">Save for everyone</button><button class="chip" id="fillbtn">Fill base from last period</button><span class="muted" id="sync"></span></div>
 <div id="result"></div>
 
@@ -142,7 +146,7 @@ track:"Sustainable leadership rhythms (burnout, sabbath practice, collaboration)
 god:"This momentum is a gift only God can give. Stay dependent on Him, steward it well, and give Him the glory."}};
 const LABEL={declining:"Declining",plateauing:"Plateauing",growing:"Growing",reproducing:"Reproducing",multiplying:"Multiplying"};
 
-let S={tf:"quarterly",th:10,env:"congregation",site:"SWC 1",y:new Date().getFullYear(),per:Math.floor(new Date().getMonth()/3)+1,code:"",name:""};
+let S={tf:"quarterly",th:10,env:"congregation",site:"SWC 1",y:new Date().getFullYear(),per:Math.floor(new Date().getMonth()/3)+1,code:"",name:"",unit:""};
 try{const x=localStorage.getItem("chc-v2");if(x)S=Object.assign(S,JSON.parse(x))}catch(e){}
 const $=id=>document.getElementById(id);
 const E=id=>ENVS.find(e=>e.id===id);
@@ -195,7 +199,7 @@ function renderInputs(){
     <div class="nm"><span>${f}</span><span class="pct" id="pc${i}">–</span></div>${/^Total Number/.test(f)?'<div class="muted" style="grid-column:1/-1;font-size:.8rem;margin-top:-4px">Count unique people only, with no repeats.</div>':""}
     <label>Base<input inputmode="numeric" type="number" min="0" step="1" data-k="b" value="${r.b??""}"></label>
     <label>New<input inputmode="numeric" type="number" min="0" step="1" data-k="n" value="${r.n??""}"></label>
-    <details><summary>Add the earlier period (optional)</summary><label>Number from one ${u} before the base<input inputmode="numeric" type="number" min="0" step="1" data-k="p" value="${r.p??""}"></label></details><div class="muted src" style="grid-column:1/-1;font-size:.8rem">${dirty[pk(env.id,env.sites?S.site:null,f)]?"Unsaved changes":r.at?"Last saved by "+(r.by||"someone")+" on "+r.at:""}</div></div>`}).join("");
+    <details><summary>Add the earlier period (optional)</summary><label>Number from one ${u} before the base<input inputmode="numeric" type="number" min="0" step="1" data-k="p" value="${r.p??""}"></label></details><div class="muted src" style="grid-column:1/-1;font-size:.8rem">${dirty[pk(env.id,env.sites?S.site:null,f)]?"Unsaved changes":r.at?"Last saved by "+(r.by||"someone")+(r.unit?" ("+r.unit+")":"")+" on "+r.at+(r.ed?", data dated "+r.ed:""):""}</div></div>`}).join("");
 }
 function badge(el,x){
   const v=x.isNew?"growing":verdict(x.pc,x.prior);
@@ -297,22 +301,32 @@ async function load(m){
   try{const r=await api({action:"getAll"});
     if(!r.ok){status(r.error,1);$("gate").hidden=false;return}
     const keep={};Object.keys(dirty).forEach(k=>keep[k]=D[k]);D={};
-    r.rows.forEach(x=>{D[[x.period,x.tf,x.env,x.site,x.cat].join("|")]={b:x.b,n:x.n,p:x.p,by:x.by,at:x.at}});
-    Object.assign(D,keep);$("gate").hidden=true;renderInputs();all();status(m||"Shared data is up to date.")
+    r.rows.forEach(x=>{D[[x.period,x.tf,x.env,x.site,x.cat].join("|")]={b:x.b,n:x.n,p:x.p,by:x.by,at:x.at,unit:x.unit,ed:x.edate}});
+    Object.assign(D,keep);$("gate").hidden=true;renderWho();renderInputs();all();status(m||"Shared data is up to date.")
   }catch(e){status("Can’t reach the server. Check your connection and the web app link.",1)}}
 async function saveShared(){
+  if(!S.name||!S.unit||!S.edate){$("gate").hidden=false;$("gmsg").textContent="Please add your name, community or ministry, and the date you are encoding, then tap Unlock.";renderGate();return}
   const rows=Object.keys(dirty).map(k=>{const a=k.split("|"),v=D[k]||{};return{period:a[0],tf:a[1],env:a[2],site:a[3],cat:a[4],b:v.b??"",n:v.n??"",p:v.p??""}});
   if(!rows.length){status("Nothing new to save.");return}
   status("Saving…");
-  try{const r=await api({action:"save",by:S.name,rows});if(r.ok){dirty={};load("Saved for everyone. The date and time were recorded.")}else status(r.error,1)}catch(e){status("Couldn’t save. Try again.",1)}}
+  try{const r=await api({action:"save",by:S.name,unit:S.unit,edate:S.edate,rows});if(r.ok){dirty={};load("Saved for everyone. The date and time were recorded.")}else status(r.error,1)}catch(e){status("Couldn’t save. Try again.",1)}}
 function fillPrev(){const env=E(S.env),s=env.sites?S.site:null;
   env.f.forEach(f=>{const v=D[pk(env.id,s,f,prevKey())];if(!v)return;const r=ref(env.id,s,f);
     if(v.n!=null&&v.n!=="")r.b=v.n;if(v.b!=null&&v.b!=="")r.p=v.b;dirty[pk(env.id,s,f)]=1});renderInputs();all()}
 $("yr").onchange=e=>{S.y=+e.target.value||S.y;renderInputs();all()};
 $("per").onchange=e=>{S.per=+e.target.value;renderInputs();all()};
 $("savebtn").onclick=saveShared;$("fillbtn").onclick=fillPrev;
-$("unlock").onclick=()=>{S.code=$("code").value.trim();S.name=$("nm").value.trim();save();load()};
-renderTop();renderInputs();all();load();
+const localDate=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
+S.edate=localDate();
+function renderGate(){$("nm").value=S.name||"";$("unit").value=S.unit||"";$("edate").value=S.edate||""}
+function renderWho(){const w=$("who");if(!S.code||!S.name||!S.unit){w.hidden=true;return}
+  w.hidden=false;w.innerHTML=`Encoding as <b>${S.name}</b> for <b>${S.unit}</b>, dated <b>${S.edate}</b>. <button class="link" id="chg">Change</button>`;
+  $("chg").onclick=()=>{$("gate").hidden=false;renderGate()}}
+$("unlock").onclick=()=>{
+  const c=$("code").value.trim()||S.code,n=$("nm").value.trim(),u=$("unit").value.trim(),d=$("edate").value;
+  if(!c||!n||!u||!d){$("gmsg").textContent="All four fields are required: access code, your name, your community or ministry, and the date of encoding.";return}
+  $("gmsg").textContent="";S.code=c;S.name=n;S.unit=u;S.edate=d;save();load()};
+renderTop();renderInputs();all();renderGate();renderWho();load();
 if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
 </body>

@@ -106,11 +106,11 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 
 <script>
 const ENVS=[
-{id:"congregation",name:"Congregation",sites:["SWC 1","SWC 2","Online"],f:["Visitors","Regular Attendees","Kids","Active Volunteers","Other SHARP Workers"],water:"welcome, follow-up of visitors, and equipping workers"},
-{id:"community",name:"Community",f:["New Contacts","Regular Community Event Attendees (Except Visitors)","Community Event Active Volunteers"],water:"personal invitations, hospitality, and caring for workers"},
-{id:"circles",name:"Circles",f:["Number of Circles","Circle Visitors","Circle Members","SHARP Volunteers"],water:"circle leader coaching, invitations, and healthy group rhythms"},
-{id:"companionships",name:"Companionships",f:["Number of CARE-givers","Number of CARE-receivers"],water:"training CARE-givers and matching them with those who need care"},
-{id:"communion",name:"Communion",f:["Jesus First Participants","Retreat Participants","Spiritual Formation Students"],water:"inviting people to gatherings and retreats, and following up afterward"},
+{id:"congregation",name:"Congregation",sites:["SWC 1","SWC 2","Online"],f:["Total Number of Visitors","Average Number of Regular Attendees","Average Number of Kids in UpNext","Total Number of New Kids in UpNext","Total Number of Volunteers","Total Number of SHARP Workers"],water:"welcome, follow-up of visitors, and equipping workers"},
+{id:"community",name:"Community",f:["Total Number of New Contacts","Total Number of Regular Community Event Attendees (Except Visitors)","Total Number of Community Event Volunteers"],water:"personal invitations, hospitality, and caring for workers"},
+{id:"circles",name:"Circles",f:["Total Number of Circles","Total Number of Circle Visitors","Total Number of Circle Members","Total Number of SHARP Volunteers"],water:"circle leader coaching, invitations, and healthy group rhythms"},
+{id:"companionships",name:"Companionships",f:["Total Number of CARE-Givers","Total Number of CARE-Receivers"],water:"training CARE-givers and matching them with those who need care"},
+{id:"communion",name:"Communion",f:["Total Number of Jesus First Participants","Total Number of Retreat Participants","Total Number of Spiritual Formation Students"],water:"inviting people to gatherings and retreats, and following up afterward"},
 {id:"core",name:"Core Leaders",f:["TAG Members","Supervisors","Circle Leaders","Task Group Leaders","Community Overseers","Ministry Coordinators"],water:"identifying, training, and encouraging emerging leaders"},
 {id:"staff",name:"Church Staff",f:["Interns","Junior Pastors 1","Junior Pastors 2","Assistant Pastors","Associate Pastors","Lead Pastors"],water:"mentoring, pastoral care of the staff, and a clear development pathway"}];
 const UNIT={monthly:"month",quarterly:"quarter","semi-annual":"half-year",annual:"year"};
@@ -190,9 +190,9 @@ function renderTop(){renderPeriod();
 function renderInputs(){
   const env=E(S.env),k=key(env.id,env.sites?S.site:null);
   const u=UNIT[S.tf];
-  $("inputs").innerHTML=`<h3 style="margin-bottom:2px">${env.name}${env.sites?" · "+S.site:""}</h3><div class="muted">Enter your base number and your new number for this ${u}.</div>`+
+  $("inputs").innerHTML=`<h3 style="margin-bottom:2px">${env.name}${env.sites?" · "+S.site:""}</h3><div class="muted">Enter your base number and your new number for this ${u}.</div>${env.f.some(x=>/^Total Number/.test(x))?'<div class="pray" style="font-size:.9rem">Reminder: for every “Total Number” category, count each person only once. Use unique people, even if someone took part in more than one gathering or activity.</div>':""}`+
   env.f.map((f,i)=>{const r=get(env.id,env.sites?S.site:null,f);return`<div class="row" data-f="${i}">
-    <div class="nm"><span>${f}</span><span class="pct" id="pc${i}">–</span></div>
+    <div class="nm"><span>${f}</span><span class="pct" id="pc${i}">–</span></div>${/^Total Number/.test(f)?'<div class="muted" style="grid-column:1/-1;font-size:.8rem;margin-top:-4px">Count unique people only, with no repeats.</div>':""}
     <label>Base<input inputmode="numeric" type="number" min="0" step="1" data-k="b" value="${r.b??""}"></label>
     <label>New<input inputmode="numeric" type="number" min="0" step="1" data-k="n" value="${r.n??""}"></label>
     <details><summary>Add the earlier period (optional)</summary><label>Number from one ${u} before the base<input inputmode="numeric" type="number" min="0" step="1" data-k="p" value="${r.p??""}"></label></details><div class="muted src" style="grid-column:1/-1;font-size:.8rem">${dirty[pk(env.id,env.sites?S.site:null,f)]?"Unsaved changes":r.at?"Last saved by "+(r.by||"someone")+" on "+r.at:""}</div></div>`}).join("");

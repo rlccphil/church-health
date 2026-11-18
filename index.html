@@ -299,7 +299,8 @@ const pLabel=(y,tf,p)=>tf==="monthly"?y+"-M"+String(p).padStart(2,"0"):tf==="qua
 function prevKey(){let y=S.y,p=S.per-1;if(p<1){y--;p=PN[S.tf]}return pLabel(y,S.tf,p)}
 function pk(e,s,c,per,u){return[per||pLabel(S.y,S.tf,S.per),S.tf,e,s||"-",c,u===undefined?S.unit:u].join("|")}
 function get(e,s,c,u){return D[pk(e,s,c,undefined,u)]||{}}
-function allUnits(){const u={};Object.keys(D).forEach(k=>u[k.split("|")[5]]=1);if(S.unit)u[S.unit]=1;return Object.keys(u).sort()}
+const KNOWN=["Real Men in Christ (Remix)","Kindred Hearts (KH)","One in Christ (OIC)","Crossroads","Real Life Youth (RLY)","Australian Surplus","Southridge","No Community Yet"];
+function allUnits(){const u={};KNOWN.forEach(k=>u[k]=1);Object.keys(D).forEach(k=>u[k.split("|")[5]]=1);if(S.unit)u[S.unit]=1;return Object.keys(u).sort()}
 function UN(){return S.view==="__all__"?allUnits():[S.view]}
 const viewLabel=()=>S.view==="__all__"?"whole church":(S.view||"(no unit)");
 function ref(e,s,c){const k=pk(e,s,c);return D[k]=D[k]||{}}

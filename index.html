@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#36533A">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>Church Health Check</title>
+<title>Church Health Scoreboard</title>
 <meta name="description" content="A simple tool for RLCC to measure growth across our relational environments, then pray and discern what to do next.">
 <meta property="og:type" content="website"><meta property="og:site_name" content="Real Life Christian Communities">
-<meta property="og:title" content="Church Health Check"><meta property="og:description" content="Plant. Water. Trust God for the growth. (1 Corinthians 3:6)">
+<meta property="og:title" content="Church Health Scoreboard"><meta property="og:description" content="Plant. Water. Trust God for the growth. (1 Corinthians 3:6)">
 <meta property="og:image" content="https://rlccphil.github.io/church-health/og-image.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://rlccphil.github.io/church-health/og-image.png">
 <link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon-192.png"><link rel="preconnect" href="https://fonts.googleapis.com">
@@ -67,61 +67,58 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 <body>
 <header class="top"><img src="rlcc-logo-white.png" alt="Real Life Christian Communities"></header>
 <main>
-<h1>Church Health Check</h1>
-<p class="sub">Compare two numbers, see the change, then pray over what it means.</p>
+<h1>Church Health Scoreboard</h1>
+<p class="sub">Monthly reports from our leaders, one honest picture of the field, and prayer before action.</p>
+<div class="chips" role="group" aria-label="Section"><button class="chip" data-tab="report">Submit a monthly report</button><button class="chip" data-tab="board">Scoreboard</button></div>
+<div class="panel" id="gate" hidden><h3>Enter the access code</h3><p class="muted">Ask the church office for the code.</p><label>Access code<input id="code" type="password" autocomplete="off"></label><p><button class="chip" id="unlock">Unlock</button></p></div>
+<div class="muted" id="sync" style="margin-bottom:8px"></div>
 
-<div class="bar">
-  <label>Time frame
-    <select id="tf"><option value="monthly">Monthly</option><option value="quarterly" selected>Quarterly</option><option value="semi-annual">Semi-annual</option><option value="annual">Annual</option></select>
-  </label>
-  <label>Growth or decline threshold
-    <select id="th"><option value="10" selected>10% or more</option><option value="15">15% or more</option></select>
-  </label>
+<section id="sec-report">
+<div class="panel">
+<h3>Monthly report</h3>
+<div class="bar"><label>Your name<input id="r_name" autocomplete="name"></label><label>Email address<input id="r_email" type="email" autocomplete="email"></label></div>
+<div class="bar"><label>I oversee a<select id="r_type"><option>Community</option><option>Ministry</option></select></label><label>Name of my community or ministry<input id="r_unit" list="unitlist" placeholder="Choose or type"></label></div>
+<datalist id="unitlist"></datalist>
+<div class="bar"><label>Date of this report<input id="r_date" type="date"></label><label>Month being reported<select id="r_month"></select></label><label>Year<input id="r_year" type="number" min="2020" max="2100"></label></div>
+<div class="pray" style="font-size:.9rem;margin:12px 0">Count each person only once. Use unique people, with no repeats, as of the end of the month you are reporting.</div>
+<div class="bar" id="fields"></div>
+<p class="muted" id="fmsg" style="color:var(--dec)"></p>
+<button class="chip" id="submit" style="background:var(--ink);color:var(--bg)">Submit report</button>
+<p class="muted">Sending a second report for the same community or ministry and month replaces the first. Every submission is kept in a log with the date and time.</p>
 </div>
+</section>
 
-<div class="bar"><label>Year<input id="yr" type="number" min="2020" max="2100"></label><label>Period<select id="per"></select></label></div>
-<div class="bar"><label>View results for<select id="view"></select></label></div>
-<div class="panel" id="gate" hidden><h3>Unlock shared data</h3><p class="muted">Enter the church access code, your name, your community or ministry, and the date you are encoding.</p><label>Access code<input id="code" type="password" autocomplete="off"></label><label>Your name<input id="nm"></label>
-<label>Community or ministry<input id="unit" list="units" placeholder="Choose or type your own"></label>
-<datalist id="units"><option value="Real Men in Christ (Remix)"><option value="Kindred Hearts (KH)"><option value="One in Christ (OIC)"><option value="Crossroads"><option value="Real Life Youth (RLY)"><option value="Australian Surplus"><option value="Southridge"><option value="No Community Yet"></datalist>
-<label>Date of encoding<input id="edate" type="date"></label><p class="muted" id="gmsg" style="color:var(--dec)"></p><p><button class="chip" id="unlock">Unlock</button></p></div>
-<div class="chips" id="envs" role="group" aria-label="Relational environment"></div>
-<div class="chips small" id="sites" role="group" aria-label="Congregation site"></div>
+<section id="sec-board" hidden>
+<div class="bar">
+  <label>Time frame<select id="tf"><option value="quarterly">Quarterly</option><option value="semi-annual">Semi-annual</option><option value="annual">Annual</option></select></label>
+  <label>Year<input id="yr" type="number" min="2020" max="2100"></label>
+  <label>Period<select id="per"></select></label>
+</div>
+<div class="bar">
+  <label>View<select id="view"></select></label>
+  <label>Growth or decline threshold<select id="th"><option value="10">10% or more</option><option value="15">15% or more</option></select></label>
+</div>
+<div id="board"></div>
+<div id="units"></div>
+<div id="sug"></div>
+</section>
 
-<div class="panel" id="inputs"></div>
-<div class="muted" id="who" style="margin-bottom:8px" hidden></div>
-<div class="tools"><button class="chip" id="savebtn">Save for everyone</button><button class="chip" id="fillbtn">Fill base from last period</button><span class="muted" id="sync"></span></div>
-<div id="result"></div>
-
-<div id="overall"></div><div id="ratios"></div>
-<div class="panel"><h3 style="font-size:1.1rem;margin-bottom:6px">At a glance</h3><div id="overview"></div></div>
-
-<details class="panel how"><summary>The agricultural leader’s checklist</summary>
-  <p><b>Soil preparation:</b> assess readiness and the relational climate before launching anything. <b>Seed selection:</b> clear, biblical, reproducible discipleship outcomes. <b>Seasonality and patience:</b> sustainable rhythms that respect God’s timing. <b>Continuous cultivation and weeding:</b> pastoral care, accountability, and pruning. <b>Reciprocal yield:</b> measure success by how many reproducers are trained, not just seating capacity.</p>
-  <p>1 Corinthians 3:6: we plant and water; God makes it grow.</p></details>
 <details class="panel how">
-  <summary>How the evaluation works</summary>
-  <p>Change % = (new − base) ÷ base × 100. An environment’s verdict uses the average change across the categories you filled in.</p>
-  <p><b>Declining</b>: down by the threshold or more. <b>Plateauing</b>: no change, or change smaller than the threshold. <b>Growing</b>: up by the threshold or more. <b>Reproducing</b>: up 100% or more (the number doubled). <b>Multiplying</b>: growth that compounds, meaning growth on top of growth.</p>
-  <p><b>Measuring compounding:</b> open “Add the earlier period” on any row and enter the number from the period before your base. If both periods grew by the threshold or more, the growth is compounding, and the verdict becomes Multiplying. The Rule of 72 then estimates doubling time: 72 ÷ growth rate per period. For example, 12% growth each quarter doubles in about 6 quarters.</p>
-  <p><b>Communities and ministries.</b> Each community or ministry enters its own numbers. “View results for” shows the whole church (everyone added together) or a single community or ministry.</p>
-  <p><b>Ratios</b> show the shape of the church, such as volunteers per 100 attendees or circle members per Circle Leader. <b>Soul Health</b> is a short 1 to 5 self-rating by each leader on soil, seed, roots, cultivation, and rhythms. Read it with the numbers: rising numbers with low soul health call for deepening, and flat numbers with strong soul health may be an underground season.</p>
-  <p>Small groups swing widely: going from 2 to 3 is +50%. Bases under 10 are marked “small base,” so read them with care.</p>
-  <p>Numbers are a tool for discernment, not a verdict on anyone’s faithfulness.</p>
+  <summary>How the scoreboard works</summary>
+  <p>Each month a leader reports the <b>current</b> numbers for their community or ministry. For a chosen quarter, half-year, or year, the app compares the latest report in that period with the report just before the period began. If there is no earlier report, it uses the first report inside the period. At least two months of reports are needed.</p>
+  <p>Change % = (latest − earlier) ÷ earlier × 100. A community’s or ministry’s verdict uses the average change across its categories. The church-wide verdict adds up everyone who has two months of reports, so a newly reporting group does not look like growth.</p>
+  <p><b>Declining</b>: down by the threshold or more. <b>Plateauing</b>: smaller change than the threshold. <b>Growing</b>: up by the threshold or more. <b>Reproducing</b>: up 100% or more. <b>Multiplying</b>: growth by the threshold or more in this period <i>and</i> the one before it, which is compounding. The Rule of 72 estimates doubling time: 72 ÷ growth per period.</p>
+  <p>Small groups swing widely: going from 2 to 3 is +50%. Bases under 10 are marked “small base.”</p>
+  <p>Numbers are a tool for discernment, not a verdict on anyone’s faithfulness. Pray first.</p>
 </details>
-<button class="link" id="reset">Reload shared data</button>
+<button class="link" id="reload">Reload data</button>
 </main>
-
 <script>
-const ENVS=[
-{id:"congregation",name:"Congregation",sites:["SWC 1","SWC 2","Online"],f:["Total Number of Visitors","Average Number of Regular Attendees","Average Number of Kids in UpNext","Total Number of New Kids in UpNext","Total Number of Volunteers","Total Number of SHARP Workers"],water:"welcome, follow-up of visitors, and equipping workers"},
-{id:"community",name:"Community",f:["Total Number of New Contacts","Total Number of Regular Community Event Attendees (Except Visitors)","Total Number of Community Event Volunteers"],water:"personal invitations, hospitality, and caring for workers"},
-{id:"circles",name:"Circles",f:["Total Number of Circles","Total Number of Circle Visitors","Total Number of Circle Members","Total Number of SHARP Volunteers"],water:"circle leader coaching, invitations, and healthy group rhythms"},
-{id:"companionships",name:"Companionships",f:["Total Number of CARE-Givers","Total Number of CARE-Receivers"],water:"training CARE-givers and matching them with those who need care"},
-{id:"communion",name:"Communion",f:["Total Number of Jesus First Participants","Total Number of Retreat Participants","Total Number of Spiritual Formation Students"],water:"inviting people to gatherings and retreats, and following up afterward"},
-{id:"core",name:"Core Leaders",f:["TAG Members","Supervisors","Circle Leaders","Task Group Leaders","Community Overseers","Ministry Coordinators"],water:"identifying, training, and encouraging emerging leaders"},
-{id:"staff",name:"Church Staff",f:["Interns","Junior Pastors 1","Junior Pastors 2","Assistant Pastors","Associate Pastors","Lead Pastors"],water:"mentoring, pastoral care of the staff, and a clear development pathway"}];
-const UNIT={monthly:"month",quarterly:"quarter","semi-annual":"half-year",annual:"year"};
+const API="https://script.google.com/macros/s/AKfycbyQqFStWoRbq4Hkl992-cd5S5qumdUcw0sDDYD22Q7JEzbqFjWOv0FDs1F9N6ghYwf1/exec";
+const FIELDS={Community:[["contacts","Contacts"],["converts","Converts"],["companions","Companions"],["circleLeaders","Circle Leaders"],["overseers","Community Overseers"],["coleaders","Co-leaders"]],Ministry:[["workers","Workers"],["coaches","Coaches"],["tgLeaders","Task Group Leaders"],["coordinators","Ministry Coordinators"],["coleaders","Co-leaders"]]};
+const KNOWN=["Real Men in Christ (Remix)","Kindred Hearts (KH)","One in Christ (OIC)","Crossroads","Real Life Youth (RLY)","Australian Surplus","Southridge"];
+const PN={quarterly:4,"semi-annual":2,annual:1},LEN={quarterly:3,"semi-annual":6,annual:12},WORD={quarterly:"quarter","semi-annual":"half-year",annual:"year"};
+const MN=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const SUG={
 declining:{pray:"Before analyzing anything, bring this number to God. Ask what He is saying through it, and listen before you act. Invite your leaders to pray and discern together, and resist the urge to panic or blame.",
 lens:[["Soil preparation","Check the heart condition and culture: apathy, hidden friction, and the level of trust and transparency."],["Continuous cultivation and weeding","Neglected fields get choked. Look for distractions, unhealthy habits, or missing pastoral care and accountability (John 15)."],["Humility in a dry season","Roots may be forming underground. Panic is the temptation; holy patience is the response."]],
@@ -150,233 +147,126 @@ track:"Sustainable leadership rhythms (burnout, sabbath practice, collaboration)
 god:"This momentum is a gift only God can give. Stay dependent on Him, steward it well, and give Him the glory."}};
 const LABEL={declining:"Declining",plateauing:"Plateauing",growing:"Growing",reproducing:"Reproducing",multiplying:"Multiplying"};
 
-let S={tf:"quarterly",th:10,env:"congregation",site:"SWC 1",y:new Date().getFullYear(),per:Math.floor(new Date().getMonth()/3)+1,code:"",name:"",unit:"",view:"__all__"};
-try{const x=localStorage.getItem("chc-v2");if(x)S=Object.assign(S,JSON.parse(x))}catch(e){}
-const $=id=>document.getElementById(id);
-const E=id=>ENVS.find(e=>e.id===id);
-const save=()=>{try{localStorage.setItem("chc-v2",JSON.stringify(S))}catch(e){}};
-const key=(env,site)=>env+"|"+(site||"-");
+
+const NOW=new Date(),localDate=()=>NOW.getFullYear()+"-"+String(NOW.getMonth()+1).padStart(2,"0")+"-"+String(NOW.getDate()).padStart(2,"0");
+let S={tab:"report",tf:"quarterly",th:10,y:NOW.getFullYear(),per:Math.floor(NOW.getMonth()/3)+1,view:"__all__",code:"",name:"",email:"",type:"Community",unit:""};
+try{const x=localStorage.getItem("chc-v3");if(x)S=Object.assign(S,JSON.parse(x))}catch(e){}
+const $=id=>document.getElementById(id),save=()=>{try{localStorage.setItem("chc-v3",JSON.stringify(S))}catch(e){}};
 const num=v=>(v===""||v==null||isNaN(+v))?null:+v;
 const pctOf=(b,n)=>(b==null||n==null||b<=0)?null:(n-b)/b*100;
 const fmt=p=>(p>0?"+":"")+(Math.round(p*10)/10)+"%";
+const mi=m=>{const a=String(m).split("-");return +a[0]*12+(+a[1]-1)},mname=i=>MN[i%12]+" "+Math.floor(i/12);
+const esc=x=>String(x).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;");
+let R=[];
 
-function verdict(p,pp){
-  const t=S.th;
-  if(p==null)return null;
-  if(pp!=null&&p>=t&&pp>=t)return"multiplying";
-  if(p>=100)return"reproducing";
-  if(p>=t)return"growing";
-  if(p<=-t)return"declining";
-  return"plateauing";
-}
-function analyze(env,sites,units){
-  const out=env.f.map(name=>{
-    let b=0,n=0,p=0,hb=false,hn=false,hp=false;
-    sites.forEach(s=>(units||UN()).forEach(u=>{const d=get(env.id,s,name,u);
-      const B=num(d.b),N=num(d.n),P=num(d.p);
-      if(B!=null){b+=B;hb=true} if(N!=null){n+=N;hn=true} if(P!=null){p+=P;hp=true}}));
-    const bb=hb?b:null,nn=hn?n:null,pr=hp?p:null;
-    const pc=pctOf(bb,nn);
-    const prior=(hp&&hb)?pctOf(pr,bb):null;
-    return{name,b:bb,n:nn,pc,prior,isNew:(bb===0&&nn>0),entered:(hb&&hn)};
-  });
-  const used=out.filter(x=>x.pc!=null);
-  if(!used.length)return{rows:out,v:null};
-  const avg=used.reduce((a,x)=>a+x.pc,0)/used.length;
-  const pri=used.filter(x=>x.prior!=null);
-  const avgPrior=pri.length?pri.reduce((a,x)=>a+x.prior,0)/pri.length:null;
-  return{rows:out,avg,avgPrior,v:verdict(avg,avgPrior),used};
-}
+function verdict(p,pp){const t=S.th;if(p==null)return null;
+  if(pp!=null&&p>=t&&pp>=t)return"multiplying";if(p>=100)return"reproducing";if(p>=t)return"growing";if(p<=-t)return"declining";return"plateauing"}
+function win(){const L=LEN[S.tf],s=S.y*12+(S.per-1)*L;return{s,e:s+L-1,L}}
+function snaps(t,u){return R.filter(r=>r.type===t&&r.unit===u).map(r=>Object.assign({i:mi(r.month)},r)).sort((a,b)=>a.i-b.i)}
+function change(sn,s,e){const inW=sn.filter(x=>x.i>=s&&x.i<=e);if(!inW.length)return null;const end=inW[inW.length-1];
+  let base=null;sn.forEach(x=>{if(x.i<s)base=x});if(!base&&inW.length>1)base=inW[0];
+  return base&&base!==end?{base,end}:null}
+function evalPairs(t,cp,pp){
+  const sum=(ps,k,w)=>{let a=0,h=false;ps.forEach(p=>{const x=num(p[w].v[k]);if(x!=null){a+=x;h=true}});return h?a:null};
+  const mean=rs=>{const u=rs.filter(r=>r.pc!=null);return u.length?u.reduce((a,r)=>a+r.pc,0)/u.length:null};
+  const rows=FIELDS[t].map(([k,l])=>{const b=sum(cp,k,"base"),n=sum(cp,k,"end");return{l,b,n,pc:pctOf(b,n)}});
+  const avg=mean(rows),avgP=mean(FIELDS[t].map(([k])=>({pc:pctOf(sum(pp,k,"base"),sum(pp,k,"end"))})));
+  return{t,rows,avg,avgP,v:avg==null?null:verdict(avg,avgP),n:cp.length}}
+function unitEval(t,u){const w=win(),sn=snaps(t,u),c=change(sn,w.s,w.e);if(!c)return null;
+  const p=change(sn,w.s-w.L,w.e-w.L);return Object.assign(evalPairs(t,[c],p?[p]:[]),{cur:c})}
+function aggEval(t){const w=win(),cps=[],pps=[];
+  [...new Set(R.filter(r=>r.type===t).map(r=>r.unit))].forEach(u=>{const sn=snaps(t,u),c=change(sn,w.s,w.e),p=change(sn,w.s-w.L,w.e-w.L);if(c)cps.push(c);if(p)pps.push(p)});
+  return cps.length?evalPairs(t,cps,pps):null}
+const doubling=p=>(p==null||p<=0)?"":`Rule of 72: at this pace the numbers double in about ${72/p<10?Math.round(72/p*10)/10:Math.round(72/p)} ${WORD[S.tf]}s.`;
+const badge=(pc,b)=>{const v=pc==null?null:verdict(pc,null);return`<span class="pct${v?" v-"+v:""}">${pc==null?"–":fmt(pc)+(b>0&&b<10?" · small base":"")}</span>`};
 
-function renderTop(){renderPeriod();renderView();
-  $("tf").value=S.tf;$("th").value=String(S.th);
-  $("envs").innerHTML=ENVS.map(e=>`<button class="chip" data-env="${e.id}" aria-pressed="${e.id===S.env}">${e.name}</button>`).join("")+`<button class="chip" data-env="soul" aria-pressed="${S.env==="soul"}">Soul Health</button>`;
-  const env=E(S.env)||{};
-  $("sites").style.display=env.sites?"flex":"none";
-  $("sites").innerHTML=env.sites?env.sites.map(s=>`<button class="chip" data-site="${s}" aria-pressed="${s===S.site}">${s}</button>`).join(""):"";
-}
-function renderInputs(){
-  if(S.env==="soul"){renderSoul();return}
-  const env=E(S.env),k=key(env.id,env.sites?S.site:null);
-  const u=UNIT[S.tf];
-  $("inputs").innerHTML=`<h3 style="margin-bottom:2px">${env.name}${env.sites?" · "+S.site:""}</h3><div class="muted">Enter your base number and your new number for this ${u}. You are entering for <b>${S.unit||"(set your community or ministry first)"}</b>.</div>${env.f.some(x=>/^Total Number/.test(x))?'<div class="pray" style="font-size:.9rem">Reminder: for every “Total Number” category, count each person only once. Use unique people, even if someone took part in more than one gathering or activity.</div>':""}`+
-  env.f.map((f,i)=>{const r=get(env.id,env.sites?S.site:null,f);return`<div class="row" data-f="${i}">
-    <div class="nm"><span>${f}</span><span class="pct" id="pc${i}">–</span></div>${/^Total Number/.test(f)?'<div class="muted" style="grid-column:1/-1;font-size:.8rem;margin-top:-4px">Count unique people only, with no repeats.</div>':""}
-    <label>Base<input inputmode="numeric" type="number" min="0" step="1" data-k="b" value="${r.b??""}"></label>
-    <label>New<input inputmode="numeric" type="number" min="0" step="1" data-k="n" value="${r.n??""}"></label>
-    <details><summary>Add the earlier period (optional)</summary><label>Number from one ${u} before the base<input inputmode="numeric" type="number" min="0" step="1" data-k="p" value="${r.p??""}"></label></details><div class="muted src" style="grid-column:1/-1;font-size:.8rem">${dirty[pk(env.id,env.sites?S.site:null,f)]?"Unsaved changes":r.at?"Last saved by "+(r.by||"someone")+(r.unit?" ("+r.unit+")":"")+" on "+r.at+(r.ed?", data dated "+r.ed:""):""}</div></div>`}).join("");
-}
-function badge(el,x){
-  const v=x.isNew?"growing":verdict(x.pc,x.prior);
-  el.className="pct"+(v?" v-"+v:"");
-  el.textContent=x.isNew?"New start":x.pc==null?"–":fmt(x.pc)+(x.b>0&&x.b<10?" · small base":"");
-}
-function doubling(p){
-  if(p==null||p<=0)return"";
-  const per=72/p;
-  return`Rule of 72: at this pace the number doubles in about ${per<10?Math.round(per*10)/10:Math.round(per)} ${UNIT[S.tf]}s.`;
-}
-function renderResult(){
-  if(S.env==="soul"){renderSoulResult();return}
-  const env=E(S.env),sites=env.sites?[S.site]:[null];
-  analyze(env,sites,[S.unit]).rows.forEach((x,i)=>badge($("pc"+i),x));
-  const a=analyze(env,sites);
-  const el=$("result");
-  if(!a.v){el.innerHTML=`<div class="panel muted">Enter a base and new number (base above zero) to see the evaluation.</div>`;return}
-  const s=SUG[a.v];
-  const top=[...a.used].sort((x,y)=>y.pc-x.pc);
-  let focus="";
-  if(top.length>1){
-    if(a.v==="declining"||a.v==="plateauing"){const w=top[top.length-1];if(w.pc<0)focus=`Biggest drop: <b>${w.name}</b> (${fmt(w.pc)}). Start your prayer there.`}
-    else{const g=top[0];focus=`Strongest gain: <b>${g.name}</b> (${fmt(g.pc)}). Give thanks for it.`}
-  }
-  const comp=a.avgPrior!=null?` Earlier period average: ${fmt(a.avgPrior)}.`:"";
-  el.innerHTML=`<div class="panel verdict v-${a.v}">
-    <div class="muted">${env.name}${env.sites?" · "+S.site:""}, ${S.tf}, ${viewLabel()}</div>
-    <h2>${LABEL[a.v]}</h2>
-    <p>Average change across ${a.used.length} categor${a.used.length>1?"ies":"y"}: <b>${fmt(a.avg)}</b>.${comp}</p>
-    <p class="muted">${doubling(a.avg)} ${focus}</p></div>
-  <div class="panel sug"><h3 style="margin-top:0">Pray and discern first</h3>
-    <div class="pray">${s.pray}</div>
-    <h3>Through a farmer’s eyes</h3>
-    <ul>${s.lens.map(x=>`<li><b>${x[0]}.</b> ${x[1]}</li>`).join("")}</ul>
-    <h3>What we can do: plant and water</h3>
-    <ul>${s.do.map(t=>`<li>${t}</li>`).join("")}<li>Focus on ${env.water}.</li></ul>
-    <h3>What only God can do</h3><p style="margin:4px 0 0">${s.god}</p>
-    <h3>What to watch beyond headcount</h3><p style="margin:4px 0 0">${s.track}</p>
-    <p class="muted" style="margin-top:12px">1 Corinthians 3:6–7: Paul planted, Apollos watered, but God gave the growth. So the one who plants and the one who waters are nothing; God alone matters, because He makes things grow.</p></div>`;
-}
-function renderOverview(){
-  const rs=ENVS.map(e=>({e,a:analyze(e,e.sites||[null])})),sa=soulAvg();
-  $("overview").innerHTML=rs.map(({e,a})=>{const v=a.v;
-    return`<div class="ov"><span>${e.name}${e.sites?` <span class="muted">(all sites)</span>`:""}</span><span class="pct${v?" v-"+v:""}">${v?LABEL[v]+" "+fmt(a.avg):"No data yet"}</span></div>`}).join("")+(sa?`<div class="ov"><span>Soul Health <span class="muted">(1 to 5)</span></span><span class="pct">${sa.avg.toFixed(1)} · ${sa.level}</span></div>`:"");
-  const w=rs.filter(x=>x.a.v),el=$("overall");
-  if(!w.length){el.innerHTML="";return}
-  const avg=w.reduce((t,x)=>t+x.a.avg,0)/w.length;
-  const pr=w.filter(x=>x.a.avgPrior!=null);
-  const avgP=pr.length?pr.reduce((t,x)=>t+x.a.avgPrior,0)/pr.length:null;
-  const v=verdict(avg,avgP),s=SUG[v];
-  let soulNote="";
-  if(sa){const up=["growing","reproducing","multiplying"].includes(v),dn=["declining","plateauing"].includes(v);
-    soulNote=`<p class="muted">Soul health: <b>${sa.avg.toFixed(1)}/5 (${sa.level})</b>. `+(up&&sa.avg<3?"The numbers are rising faster than the roots. Pause to deepen discipleship before adding more.":dn&&sa.avg>=4?"Leaders report healthy roots, so this may be an underground season. Stay patient and faithful.":`Lowest area: ${sa.weak.name}.`)+"</p>"}
-  const so=[...w].sort((x,y)=>y.a.avg-x.a.avg),hi=so[0],lo=so[so.length-1];
-  const cnt={};w.forEach(x=>cnt[x.a.v]=(cnt[x.a.v]||0)+1);
-  const mix=Object.keys(cnt).map(k=>cnt[k]+" "+LABEL[k].toLowerCase()).join(", ");
-  const part=w.length<ENVS.length?` Only ${w.length} of ${ENVS.length} environments have data for this period, so this is a partial picture.`:"";
-  const pair=w.length>1?`<p class="muted">Strongest: <b>${hi.e.name}</b> (${fmt(hi.a.avg)}). Needs the most care: <b>${lo.e.name}</b> (${fmt(lo.a.avg)}).</p>`:"";
-  const watch=(w.length>1&&lo.a.v==="declining"&&v!=="declining")?`<li>Even in a healthy season, give prayerful attention to <b>${lo.e.name}</b>, which is declining.</li>`:"";
-  el.innerHTML=`<div class="panel verdict v-${v}"><div class="muted">${S.view==="__all__"?"Whole church":S.view||"(no unit)"}, ${S.tf} period ${pLabel(S.y,S.tf,S.per)}</div>
-    <h2>${LABEL[v]}</h2>
-    <p>Average change across ${w.length} environment${w.length>1?"s":""}: <b>${fmt(avg)}</b> (each environment counts equally). Mix: ${mix}.${part}</p>${pair}
-    <p class="muted">${doubling(avg)}</p>${soulNote}</div>
-  <div class="panel sug"><h3 style="margin-top:0">Pray and discern first</h3><div class="pray">${s.pray}</div>
-    <h3>Through a farmer’s eyes</h3><ul>${s.lens.map(x=>`<li><b>${x[0]}.</b> ${x[1]}</li>`).join("")}</ul>
-    <h3>What we can do: plant and water</h3><ul>${s.do.map(t=>`<li>${t}</li>`).join("")}${watch}</ul>
-    <h3>What only God can do</h3><p style="margin:4px 0 0">${s.god}</p>
-    <h3>What to watch beyond headcount</h3><p style="margin:4px 0 0">${s.track}</p></div>`;
-}
-function all(){renderResult();renderOverview();renderRatios();save()}
+function units(){const u=[];KNOWN.forEach(x=>u.push(["Community",x]));
+  R.forEach(r=>{if(!u.some(x=>x[0]===r.type&&x[1]===r.unit))u.push([r.type,r.unit])});return u}
+function renderPeriod(){let o="";for(let i=1;i<=PN[S.tf];i++)o+=`<option value="${i}">${S.tf==="quarterly"?"Q"+i:S.tf==="semi-annual"?"H"+i:"Full year"}</option>`;
+  $("per").innerHTML=o;$("per").value=Math.min(S.per,PN[S.tf]);$("tf").value=S.tf;$("yr").value=S.y;$("th").value=String(S.th)}
+function renderView(){const us=units(),opt=(t)=>us.filter(x=>x[0]===t).map(x=>`<option value="${esc(x[0]+"|"+x[1])}">${esc(x[1])}</option>`).join("");
+  $("view").innerHTML=`<option value="__all__">Whole church</option><option value="__Community">All communities</option><option value="__Ministry">All ministries</option><optgroup label="Communities">${opt("Community")}</optgroup>${us.some(x=>x[0]==="Ministry")?`<optgroup label="Ministries">${opt("Ministry")}</optgroup>`:""}`;
+  if(!/^(__all__|__Community|__Ministry|(Community|Ministry)\|.+)$/.test(S.view))S.view="__all__";$("view").value=S.view;
+  if(![...$("view").options].some(o=>o.value===S.view)){S.view="__all__";$("view").value=S.view}}
+function renderUnitList(){$("unitlist").innerHTML=(S.type==="Community"?KNOWN:[...new Set(R.filter(r=>r.type==="Ministry").map(r=>r.unit))]).map(u=>`<option value="${esc(u)}">`).join("")}
+function renderForm(){$("fields").innerHTML=FIELDS[S.type].map(([k,l])=>`<label>Current number of ${l}<input type="number" min="0" step="1" inputmode="numeric" id="f_${k}"></label>`).join("");renderUnitList()}
+function showTab(){$("sec-report").hidden=S.tab!=="report";$("sec-board").hidden=S.tab!=="board";
+  document.querySelectorAll("[data-tab]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.tab===S.tab))}
 
-document.addEventListener("click",e=>{
-  const c=e.target.closest("[data-env],[data-site]");if(!c)return;
-  if(c.dataset.env){S.env=c.dataset.env;S.site=(E(S.env)||{}).sites?E(S.env).sites[0]:S.site}
-  if(c.dataset.site)S.site=c.dataset.site;
-  renderTop();renderInputs();all();
-});
-$("inputs").addEventListener("input",e=>{
-  const i=e.target.closest("input");if(!i)return;
-  const env=E(S.env),s=env.sites?S.site:null,f=env.f[+i.closest(".row").dataset.f];
-  ref(env.id,s,f)[i.dataset.k]=i.value;dirty[pk(env.id,s,f)]=1;const sr=i.closest(".row").querySelector(".src");if(sr)sr.textContent="Unsaved changes";all();
-});
-$("tf").onchange=e=>{S.tf=e.target.value;S.per=Math.min(S.per,PN[S.tf]);renderTop();renderInputs();all()};
-$("th").onchange=e=>{S.th=+e.target.value;all()};
-$("reset").onclick=()=>load();
-const API="https://script.google.com/macros/s/AKfycbyQqFStWoRbq4Hkl992-cd5S5qumdUcw0sDDYD22Q7JEzbqFjWOv0FDs1F9N6ghYwf1/exec";
-const PN={monthly:12,quarterly:4,"semi-annual":2,annual:1};
-const MN=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-let D={},dirty={};
-const pLabel=(y,tf,p)=>tf==="monthly"?y+"-M"+String(p).padStart(2,"0"):tf==="quarterly"?y+"-Q"+p:tf==="semi-annual"?y+"-H"+p:""+y;
-function prevKey(){let y=S.y,p=S.per-1;if(p<1){y--;p=PN[S.tf]}return pLabel(y,S.tf,p)}
-function pk(e,s,c,per,u){return[per||pLabel(S.y,S.tf,S.per),S.tf,e,s||"-",c,u===undefined?S.unit:u].join("|")}
-function get(e,s,c,u){return D[pk(e,s,c,undefined,u)]||{}}
-const KNOWN=["Real Men in Christ (Remix)","Kindred Hearts (KH)","One in Christ (OIC)","Crossroads","Real Life Youth (RLY)","Australian Surplus","Southridge","No Community Yet"];
-function allUnits(){const u={};KNOWN.forEach(k=>u[k]=1);Object.keys(D).forEach(k=>u[k.split("|")[5]]=1);if(S.unit)u[S.unit]=1;return Object.keys(u).sort()}
-function UN(){return S.view==="__all__"?allUnits():[S.view]}
-const viewLabel=()=>S.view==="__all__"?"whole church":(S.view||"(no unit)");
-function ref(e,s,c){const k=pk(e,s,c);return D[k]=D[k]||{}}
-function renderPeriod(){let o="";for(let i=1;i<=PN[S.tf];i++)o+=`<option value="${i}">${S.tf==="monthly"?MN[i-1]:S.tf==="quarterly"?"Q"+i:S.tf==="semi-annual"?"H"+i:"Full year"}</option>`;
-  $("per").innerHTML=o;$("per").value=S.per;$("yr").value=S.y}
+function sugHTML(v,rows){
+  const s=SUG[v],u=rows.filter(r=>r.pc!=null).sort((a,b)=>b.pc-a.pc);let focus="";
+  if(u.length>1){if(v==="declining"||v==="plateauing"){const w=u[u.length-1];if(w.pc<0)focus=`<li>Biggest drop: <b>${w.l}</b> (${fmt(w.pc)}). Start your prayer there.</li>`}else focus=`<li>Strongest gain: <b>${u[0].l}</b> (${fmt(u[0].pc)}). Give thanks for it.</li>`}
+  return`<div class="panel sug"><h3 style="margin-top:0">Pray and discern first</h3><div class="pray">${s.pray}</div>
+  <h3>Through a farmer’s eyes</h3><ul>${s.lens.map(x=>`<li><b>${x[0]}.</b> ${x[1]}</li>`).join("")}</ul>
+  <h3>What we can do: plant and water</h3><ul>${s.do.map(t=>`<li>${t}</li>`).join("")}${focus}</ul>
+  <h3>What only God can do</h3><p style="margin:4px 0 0">${s.god}</p>
+  <h3>What to watch beyond headcount</h3><p style="margin:4px 0 0">${s.track}</p>
+  <p class="muted" style="margin-top:12px">1 Corinthians 3:6–7: Paul planted, Apollos watered, but God gave the growth.</p></div>`}
+
+function renderBoard(){
+  const w=win(),v=S.view;let evs,title,note;
+  if(v==="__all__"){evs=["Community","Ministry"].map(t=>aggEval(t));title="Whole church"}
+  else if(v==="__Community"||v==="__Ministry"){const t=v.slice(2);evs=[aggEval(t)];title=t==="Community"?"All communities":"All ministries"}
+  else{const i=v.indexOf("|"),t=v.slice(0,i),u=v.slice(i+1),e=unitEval(t,u);evs=[e];title=u}
+  const ok=evs.filter(e=>e&&e.avg!=null),per=`${w.L===12?S.y:mname(w.s)+" to "+mname(w.e)}`;
+  $("units").innerHTML=unitsHTML(w);
+  if(!ok.length){$("board").innerHTML=`<div class="panel"><h3>${esc(title)}</h3><p class="muted">Not enough reports yet for ${per}. Each community or ministry needs reports for at least two months (one before or inside this period, and one at its end).</p></div>`;$("sug").innerHTML="";return}
+  const mean=a=>a.reduce((x,y)=>x+y,0)/a.length,avg=mean(ok.map(e=>e.avg)),pr=ok.filter(e=>e.avgP!=null),avgP=pr.length?mean(pr.map(e=>e.avgP)):null,vv=verdict(avg,avgP);
+  const c=ok.length===1&&ok[0].cur;
+  note=c?`Compared ${mname(c.base.i)} with ${mname(c.end.i)}.`:`Latest report in the period compared with the report before it, for groups with two months of reports (${ok.map(e=>e.n+" "+(e.t==="Community"?(e.n===1?"community":"communities"):(e.n===1?"ministry":"ministries"))).join(", ")}).`;
+  $("board").innerHTML=`<div class="panel verdict v-${vv}"><div class="muted">${esc(title)}, ${S.tf}, ${per}</div><h2>${LABEL[vv]}</h2>
+  <p>Average change: <b>${fmt(avg)}</b>${avgP!=null?` (previous period ${fmt(avgP)})`:""}.</p><p class="muted">${note} ${doubling(avg)}</p></div>`+
+  ok.map(e=>`<div class="panel"><h3 style="font-size:1.05rem;margin-bottom:4px">${e.t==="Community"?"Community numbers":"Ministry numbers"}${ok.length>1?` · ${LABEL[e.v]} ${fmt(e.avg)}`:""}</h3>`+
+  e.rows.map(r=>`<div class="ov"><span>${r.l}<br><span class="muted" style="font-size:.85rem">${r.b==null?"–":r.b} → ${r.n==null?"–":r.n}</span></span>${badge(r.pc,r.b)}</div>`).join("")+`</div>`).join("");
+  $("sug").innerHTML=sugHTML(vv,ok.flatMap(e=>e.rows))}
+function unitsHTML(w){
+  if(S.view!=="__all__"&&!S.view.startsWith("__"))return"";
+  const t=S.view==="__Community"?"Community":S.view==="__Ministry"?"Ministry":null;
+  const rows=units().filter(x=>!t||x[0]===t).map(([ty,u])=>{const sn=snaps(ty,u);let r;
+    if(!sn.length)r=`<span class="muted">No report yet</span>`;
+    else if(!sn.some(x=>x.i>=w.s&&x.i<=w.e))r=`<span class="muted">No report this period</span>`;
+    else{const e=unitEval(ty,u);r=e&&e.v?`<span class="pct v-${e.v}">${LABEL[e.v]} ${fmt(e.avg)}</span>`:`<span class="muted">Needs a second month</span>`}
+    return`<div class="ov"><span>${esc(u)} <span class="muted">(${ty})</span></span>${r}</div>`}).join("");
+  return`<div class="panel"><h3 style="font-size:1.05rem;margin-bottom:6px">Each community and ministry</h3>${rows}</div>`}
+
 async function api(b){const r=await fetch(API,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(Object.assign({code:S.code},b))});return r.json()}
 function status(t,bad){const s=$("sync");s.textContent=t;s.style.color=bad?"var(--dec)":"var(--mute)"}
 async function load(m){
-  if(!S.code||API.startsWith("PASTE")){$("gate").hidden=false;if(API.startsWith("PASTE"))status("Add your web app link to index.html first.",1);return}
-  status("Loading shared data…");
-  try{const r=await api({action:"getAll"});
-    if(!r.ok){status(r.error,1);$("gate").hidden=false;return}
-    const keep={};Object.keys(dirty).forEach(k=>keep[k]=D[k]);D={};
-    r.rows.forEach(x=>{D[[x.period,x.tf,x.env,x.site,x.cat,x.unit||""].join("|")]={b:x.b,n:x.n,p:x.p,by:x.by,at:x.at,unit:x.unit,ed:x.edate}});
-    Object.assign(D,keep);$("gate").hidden=true;renderWho();renderView();renderInputs();all();status(m||"Shared data is up to date.")
-  }catch(e){status("Can’t reach the server. Check your connection and the web app link.",1)}}
-async function saveShared(){
-  if(!S.name||!S.unit||!S.edate){$("gate").hidden=false;$("gmsg").textContent="Please add your name, community or ministry, and the date you are encoding, then tap Unlock.";renderGate();return}
-  const rows=Object.keys(dirty).map(k=>{const a=k.split("|"),v=D[k]||{};return{period:a[0],tf:a[1],env:a[2],site:a[3],cat:a[4],unit:a[5],b:v.b??"",n:v.n??"",p:v.p??""}});
-  if(!rows.length){status("Nothing new to save.");return}
-  status("Saving…");
-  try{const r=await api({action:"save",by:S.name,unit:S.unit,edate:S.edate,rows});if(r.ok){dirty={};load("Saved for everyone. The date and time were recorded.")}else status(r.error,1)}catch(e){status("Couldn’t save. Try again.",1)}}
-function fillPrev(){if(S.env==="soul")return;const env=E(S.env),s=env.sites?S.site:null;
-  env.f.forEach(f=>{const v=D[pk(env.id,s,f,prevKey())];if(!v)return;const r=ref(env.id,s,f);
-    if(v.n!=null&&v.n!=="")r.b=v.n;if(v.b!=null&&v.b!=="")r.p=v.b;dirty[pk(env.id,s,f)]=1});renderInputs();all()}
-const SOUL=[["soil","Soil","Trust, unity, and openness to grace are growing among us."],["seed","Seed","Our activities clearly aim at making disciples and leaders, not just attendance."],["roots","Roots","People’s Bible reading, prayer, and character are deepening."],["weeds","Cultivation","Care, correction, and accountability are active and welcomed."],["rhythm","Rhythms","Leaders practice sabbath, share the work, and avoid burnout."]];
-const SADV={soil:"Soil preparation: make room for honest conversation, address hidden friction, and build trust through transparency. We can till the ground; only God softens hearts.",seed:"Seed selection: check that each gathering has a clear disciple-making outcome. We can choose and sow the seed carefully; only God gives it life.",roots:"Underground roots: encourage personal Bible reading and prayer, and walk closely with a few people. We can water faithfully; the unseen germination is God’s work.",weeds:"Cultivation and weeding: strengthen pastoral care, gentle correction, and accountability (John 15). We can prune and tend; only God makes the branches fruitful.",rhythm:"Sustainable rhythms: protect sabbath, share the load, and care for the leaders. We can build healthy rhythms; we are not the Holy Spirit and need not manufacture the growth."};
-function soulAvg(){
-  const us=UN(),qs=[];
-  SOUL.forEach(q=>{const v=[];us.forEach(u=>{const n=num(get("soul","-","q:"+q[0],u).n);if(n!=null)v.push(n)});if(v.length)qs.push({id:q[0],name:q[1],avg:v.reduce((a,x)=>a+x,0)/v.length})});
-  if(!qs.length)return null;
-  const avg=qs.reduce((a,x)=>a+x.avg,0)/qs.length,weak=[...qs].sort((a,b)=>a.avg-b.avg)[0];
-  return{avg,qs,weak,level:avg>=4?"Flourishing":avg>=3?"Steady":"Needs attention"};
-}
-function renderSoul(){
-  $("inputs").innerHTML=`<h3 style="margin-bottom:2px">Soul Health</h3><div class="muted">Pray first, then rate each statement for this ${UNIT[S.tf]} from 1 (not yet true) to 5 (very true) for <b>${S.unit||"(set your community or ministry first)"}</b>. This is for care and discernment, not for comparing communities.</div>`+
-  SOUL.map(q=>{const v=get("soul","-","q:"+q[0]).n;return`<div class="row" style="grid-template-columns:1fr"><div class="nm"><span>${q[1]}</span></div><div class="muted" style="margin-top:-4px">${q[2]}</div><select data-q="${q[0]}"><option value="">Not rated</option>${[1,2,3,4,5].map(i=>`<option value="${i}"${String(v)===String(i)?" selected":""}>${i}</option>`).join("")}</select><div class="muted src" style="font-size:.8rem">${dirty[pk("soul","-","q:"+q[0])]?"Unsaved changes":""}</div></div>`}).join("")
-}
-function renderSoulResult(){
-  const a=soulAvg(),el=$("result");
-  if(!a){el.innerHTML=`<div class="panel muted">No soul-health ratings yet for this period (${viewLabel()}).</div>`;return}
-  el.innerHTML=`<div class="panel verdict ${a.avg>=4?"v-growing":a.avg>=3?"v-plateauing":"v-declining"}"><div class="muted">Soul health, ${viewLabel()}, ${pLabel(S.y,S.tf,S.per)}</div><h2>${a.level}</h2><p>Average rating: <b>${a.avg.toFixed(1)} out of 5</b>.</p><p class="muted">${a.qs.map(x=>x.name+" "+x.avg.toFixed(1)).join(" · ")}</p></div>
-  <div class="panel sug"><h3 style="margin-top:0">Pray and discern first</h3><div class="pray">Bring these ratings to God before anyone acts on them. Ask what He sees beneath the surface, and invite your leaders to listen with you.</div><h3>Lowest area: ${a.weak.name} (${a.weak.avg.toFixed(1)})</h3><p style="margin:4px 0 0">${SADV[a.weak.id]}</p><p class="muted" style="margin-top:12px">1 Corinthians 3:6: we plant and water; God makes it grow.</p></div>`}
-function renderRatios(){
-  const el=$("ratios"),A=id=>analyze(E(id),E(id).sites||[null]).rows,g=(r,n,k)=>{const x=r.find(y=>y.name===n);return x?x[k]:null};
-  const cg=A("congregation"),cc=A("circles"),co=A("core"),cp=A("companionships");
-  const defs=[["Visitors per 100 regular attendees",cg,"Total Number of Visitors",cg,"Average Number of Regular Attendees",100,"Are newcomers arriving in step with the people already here?"],
-  ["Volunteers per 100 regular attendees",cg,"Total Number of Volunteers",cg,"Average Number of Regular Attendees",100,"Is the congregation being mobilized to serve?"],
-  ["SHARP workers per 100 regular attendees",cg,"Total Number of SHARP Workers",cg,"Average Number of Regular Attendees",100,"Is the depth of service growing with attendance?"],
-  ["Circle members per circle",cc,"Circle Members",cc,"Total Number of Circles",1,"Are circles a healthy, shepherdable size?"],
-  ["Circle members per Circle Leader",cc,"Circle Members",co,"Circle Leaders",1,"Is leadership keeping pace with membership?"],
-  ["CARE-receivers per CARE-giver",cp,"Total Number of CARE-Receivers",cp,"Total Number of CARE-Givers",1,"Is care capacity keeping pace with need?"]];
-  const rows=defs.map(d=>{const f=k=>{const a=g(d[1],d[2],k),b=g(d[3],d[4],k);return(a==null||b==null||b<=0)?null:a/b*d[5]};return{l:d[0],t:d[6],b:f("b"),n:f("n")}}).filter(r=>r.n!=null||r.b!=null);
-  if(!rows.length){el.innerHTML="";return}
-  const r1=x=>x==null?"–":Math.round(x*10)/10;
-  el.innerHTML=`<div class="panel"><h3 style="font-size:1.1rem;margin-bottom:2px">Ratios</h3><div class="muted">The shape of the church, ${viewLabel()}. For reflection, not targets.</div>`+rows.map(r=>`<div class="ov" style="align-items:flex-start"><span>${r.l}<br><span class="muted" style="font-size:.85rem">${r.t}</span></span><span class="pct" style="white-space:nowrap">${r1(r.b)} → ${r1(r.n)}</span></div>`).join("")+`</div>`}
-function renderView(){const us=allUnits(),esc=x=>x.replace(/"/g,"&quot;");
-  $("view").innerHTML=`<option value="__all__">Whole church (all communities and ministries)</option>`+us.map(u=>`<option value="${esc(u)}">${u||"(no community or ministry)"}</option>`).join("");
-  if(S.view!=="__all__"&&!us.includes(S.view))S.view="__all__";$("view").value=S.view}
-$("view").onchange=e=>{S.view=e.target.value;all()};
-$("inputs").addEventListener("change",e=>{const q=e.target.closest("select[data-q]");if(!q)return;
-  ref("soul","-","q:"+q.dataset.q).n=q.value;dirty[pk("soul","-","q:"+q.dataset.q)]=1;q.parentNode.querySelector(".src").textContent="Unsaved changes";all()});
-$("yr").onchange=e=>{S.y=+e.target.value||S.y;renderInputs();all()};
-$("per").onchange=e=>{S.per=+e.target.value;renderInputs();all()};
-$("savebtn").onclick=saveShared;$("fillbtn").onclick=fillPrev;
-const localDate=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
-S.edate=localDate();
-function renderGate(){$("nm").value=S.name||"";$("unit").value=S.unit||"";$("edate").value=S.edate||""}
-function renderWho(){const w=$("who");if(!S.code||!S.name||!S.unit){w.hidden=true;return}
-  w.hidden=false;w.innerHTML=`Encoding as <b>${S.name}</b> for <b>${S.unit}</b>, dated <b>${S.edate}</b>. <button class="link" id="chg">Change</button>`;
-  $("chg").onclick=()=>{$("gate").hidden=false;renderGate()}}
-$("unlock").onclick=()=>{
-  const c=$("code").value.trim()||S.code,n=$("nm").value.trim(),u=$("unit").value.trim(),d=$("edate").value;
-  if(!c||!n||!u||!d){$("gmsg").textContent="All four fields are required: access code, your name, your community or ministry, and the date of encoding.";return}
-  $("gmsg").textContent="";S.code=c;S.name=n;S.unit=u;S.edate=d;save();load()};
-renderTop();renderInputs();all();renderGate();renderWho();load();
+  if(!S.code){$("gate").hidden=false;return}
+  status("Loading reports…");
+  try{const r=await api({action:"getAll"});if(!r.ok){status(r.error,1);$("gate").hidden=false;return}
+    R=r.reports;$("gate").hidden=true;renderView();renderUnitList();renderBoard();status(m||"Reports are up to date.")}
+  catch(e){status("Can’t reach the server. Check your connection and the web app link.",1)}}
+async function submitReport(){
+  const t=$("r_type").value,F=FIELDS[t],name=$("r_name").value.trim(),email=$("r_email").value.trim(),unit=$("r_unit").value.trim(),date=$("r_date").value,y=$("r_year").value,mo=+$("r_month").value;
+  const v={};let bad=!name||!/^\S+@\S+\.\S+$/.test(email)||!unit||!date||!(+y>2000);
+  F.forEach(([k])=>{const n=num($("f_"+k).value);if(n==null||n<0||!Number.isInteger(n))bad=true;v[k]=n});
+  if(bad){$("fmsg").textContent="Please fill in every field: your name, a valid email, your community or ministry, the dates, and a whole number (0 or more) for each category.";return}
+  $("fmsg").textContent="";const month=y+"-"+String(mo+1).padStart(2,"0");
+  const ex=R.find(r=>r.type===t&&r.unit===unit&&r.month===month);
+  if(ex&&!confirm(`A report for ${unit} for ${MN[mo]} ${y} was already submitted by ${ex.name} on ${ex.at}. Replace it? The earlier version stays in the log.`))return;
+  if(!S.code){$("gate").hidden=false;$("fmsg").textContent="Enter the access code first.";return}
+  status("Submitting…");
+  try{const r=await api({action:"submit",report:{type:t,unit,month,date,name,email,v}});
+    if(!r.ok){status(r.error,1);return}
+    S.name=name;S.email=email;S.type=t;S.unit=unit;save();F.forEach(([k])=>$("f_"+k).value="");
+    await load(`Thank you. Your ${MN[mo]} ${y} report for ${unit} was received${r.replaced?" and replaced the earlier one":""} on ${r.at}.`)}
+  catch(e){status("Couldn’t submit. Check your connection and try again.",1)}}
+
+document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{S.tab=b.dataset.tab;showTab();save()});
+$("r_type").onchange=e=>{S.type=e.target.value;$("r_unit").value="";renderForm()};
+$("tf").onchange=e=>{S.tf=e.target.value;S.per=Math.min(S.per,PN[S.tf]);renderPeriod();renderBoard();save()};
+$("yr").onchange=e=>{S.y=+e.target.value||S.y;renderBoard();save()};
+$("per").onchange=e=>{S.per=+e.target.value;renderBoard();save()};
+$("th").onchange=e=>{S.th=+e.target.value;renderBoard();save()};
+$("view").onchange=e=>{S.view=e.target.value;renderBoard();save()};
+$("unlock").onclick=()=>{const c=$("code").value.trim();if(!c)return;S.code=c;save();load()};
+$("submit").onclick=submitReport;$("reload").onclick=()=>load();
+
+$("r_name").value=S.name;$("r_email").value=S.email;$("r_type").value=S.type;$("r_unit").value=S.unit;
+$("r_date").value=localDate();$("r_year").value=NOW.getFullYear();
+$("r_month").innerHTML=MN.map((m,i)=>`<option value="${i}">${m}</option>`).join("");$("r_month").value=NOW.getMonth();
+renderForm();renderPeriod();renderView();showTab();renderBoard();load();
 if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
 </body>

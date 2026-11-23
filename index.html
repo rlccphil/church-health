@@ -106,7 +106,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 <details class="panel how">
   <summary>How the scoreboard works</summary>
   <p>Each month a leader reports the <b>current</b> numbers for their community or ministry. For a chosen quarter, half-year, or year, the app compares the latest report in that period with the report just before the period began. If there is no earlier report, it uses the first report inside the period. At least two months of reports are needed.</p>
-  <p>Change % = (latest − earlier) ÷ earlier × 100. A community’s or ministry’s verdict uses the average change across its categories. The church-wide verdict adds up everyone who has two months of reports, so a newly reporting group does not look like growth.</p>
+  <p>Change % = (latest − earlier) ÷ earlier × 100. A community’s or ministry’s verdict uses the average change across its categories. The church-wide verdict adds up everyone who has two months of reports, so a newly reporting group does not look like growth. A report named “Whole Church” counts toward the church-wide totals like any other, so use it only for people not already counted in a community or ministry report.</p>
   <p><b>Declining</b>: down by the threshold or more. <b>Plateauing</b>: smaller change than the threshold. <b>Growing</b>: up by the threshold or more. <b>Reproducing</b>: up 100% or more. <b>Multiplying</b>: growth by the threshold or more in this period <i>and</i> the one before it, which is compounding. The Rule of 72 estimates doubling time: 72 ÷ growth per period.</p>
   <p>Small groups swing widely: going from 2 to 3 is +50%. Bases under 10 are marked “small base.”</p>
   <p>Numbers are a tool for discernment, not a verdict on anyone’s faithfulness. Pray first.</p>
@@ -116,7 +116,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 <script>
 const API="https://script.google.com/macros/s/AKfycbyQqFStWoRbq4Hkl992-cd5S5qumdUcw0sDDYD22Q7JEzbqFjWOv0FDs1F9N6ghYwf1/exec";
 const FIELDS={Community:[["contacts","New Contacts"],["converts","New Converts"],["attendees","Community Attendees"],["circleMembers","Circle Members"],["companions","Companions (those who CARE, BUILD, and DEPLOY Circle Members)"],["sharp","Other SHARP Workers"],["circleLeaders","Circle Leaders"],["coleaders","TAG Trainees"],["impact","IMPACT Members"],["overseers","Community Overseers"]],Ministry:[["volunteers","Active Volunteers"],["sharpVol","Other SHARP Volunteers"],["coaches","Coaches"],["tgLeaders","Task Group Leaders"],["coleaders","TAG Trainees"],["impact","IMPACT Members"],["coordinators","Ministry Coordinators"]]};
-const KNOWN=["Real Men in Christ (Remix)","Kindred Hearts (KH)","One in Christ (OIC)","Crossroads","Real Life Youth (RLY)","Australian Surplus","Southridge"];
+const KNOWN=["Real Men in Christ (Remix)","Kindred Hearts (KH)","One in Christ (OIC)","Crossroads","Real Life Youth (RLY)","Australian Surplus","Southridge","Whole Church"];
 const PN={quarterly:4,"semi-annual":2,annual:1},LEN={quarterly:3,"semi-annual":6,annual:12},WORD={quarterly:"quarter","semi-annual":"half-year",annual:"year"};
 const MN=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const SUG={
@@ -188,7 +188,7 @@ function renderView(){const us=units(),opt=(t)=>us.filter(x=>x[0]===t).map(x=>`<
   $("view").innerHTML=`<option value="__all__">Whole church</option><option value="__Community">All communities</option><option value="__Ministry">All ministries</option><optgroup label="Communities">${opt("Community")}</optgroup>${us.some(x=>x[0]==="Ministry")?`<optgroup label="Ministries">${opt("Ministry")}</optgroup>`:""}`;
   if(!/^(__all__|__Community|__Ministry|(Community|Ministry)\|.+)$/.test(S.view))S.view="__all__";$("view").value=S.view;
   if(![...$("view").options].some(o=>o.value===S.view)){S.view="__all__";$("view").value=S.view}}
-function renderUnitList(){$("unitlist").innerHTML=(S.type==="Community"?KNOWN:[...new Set(R.filter(r=>r.type==="Ministry").map(r=>r.unit))]).map(u=>`<option value="${esc(u)}">`).join("")}
+function renderUnitList(){$("unitlist").innerHTML=(S.type==="Community"?KNOWN:[...new Set(["Whole Church",...R.filter(r=>r.type==="Ministry").map(r=>r.unit)])]).map(u=>`<option value="${esc(u)}">`).join("")}
 function renderForm(){$("fields").innerHTML=FIELDS[S.type].map(([k,l])=>`<label>Current number of ${l}<input type="number" min="0" step="1" inputmode="numeric" id="f_${k}"></label>`).join("");renderUnitList()}
 function showTab(){$("sec-report").hidden=S.tab!=="report";$("sec-board").hidden=S.tab!=="board";
   document.querySelectorAll("[data-tab]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.tab===S.tab))}

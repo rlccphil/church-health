@@ -62,6 +62,7 @@ button.link{background:none;border:0;color:var(--acc);font:500 .9rem Figtree,san
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:#36533A;z-index:10}
 .panel label{display:block;margin-top:8px;font-size:.85rem;color:var(--mute)}.panel[hidden]{display:none}
 .tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+[hidden]{display:none!important}
 </style>
 </head>
 <body>
@@ -77,8 +78,8 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 <div class="panel">
 <h3>Monthly report</h3>
 <div class="bar"><label>Your name<input id="r_name" autocomplete="name"></label><label>Email address<input id="r_email" type="email" autocomplete="email"></label></div>
-<div class="bar"><label>I oversee a<select id="r_type"><option>Community</option><option>Ministry</option></select></label><label>Name of my community or ministry<input id="r_unit" list="unitlist" placeholder="Choose or type"></label></div>
-<datalist id="unitlist"></datalist>
+<div class="bar"><label>I oversee a<select id="r_type"><option>Community</option><option>Ministry</option></select></label><label>Name of my community or ministry<select id="r_unitsel"></select></label></div>
+<div class="bar" id="r_otherwrap" hidden><label>Type the name of your community or ministry<input id="r_unit" autocomplete="off"></label></div>
 <div class="bar"><label>Date of this report<input id="r_date" type="date"></label><label>Month being reported<select id="r_month"></select></label><label>Year<input id="r_year" type="number" min="2020" max="2100"></label></div>
 <div class="bar" id="fields"></div>
 <p class="muted" id="fmsg" style="color:var(--dec)"></p>
@@ -187,7 +188,11 @@ function renderView(){const us=units(),opt=(t)=>us.filter(x=>x[0]===t).map(x=>`<
   $("view").innerHTML=`<option value="__all__">Whole church</option><option value="__Community">All communities</option><option value="__Ministry">All ministries</option><optgroup label="Communities">${opt("Community")}</optgroup>${us.some(x=>x[0]==="Ministry")?`<optgroup label="Ministries">${opt("Ministry")}</optgroup>`:""}`;
   if(!/^(__all__|__Community|__Ministry|(Community|Ministry)\|.+)$/.test(S.view))S.view="__all__";$("view").value=S.view;
   if(![...$("view").options].some(o=>o.value===S.view)){S.view="__all__";$("view").value=S.view}}
-function renderUnitList(){$("unitlist").innerHTML=(S.type==="Community"?KNOWN:[...new Set(["Whole Church",...R.filter(r=>r.type==="Ministry").map(r=>r.unit)])]).map(u=>`<option value="${esc(u)}">`).join("")}
+function getUnit(){const v=$("r_unitsel").value;return v==="__other"?$("r_unit").value.trim():v}
+function setUnit(n){const sel=$("r_unitsel"),has=[...sel.options].some(o=>o.value===n&&n!=="");
+  sel.value=has?n:(n?"__other":"");$("r_unit").value=has?"":(n||"");$("r_otherwrap").hidden=sel.value!=="__other"}
+function renderUnitList(){const cur=getUnit(),list=S.type==="Community"?KNOWN:[...new Set(["Whole Church",...R.filter(r=>r.type==="Ministry").map(r=>r.unit)])];
+  $("r_unitsel").innerHTML=`<option value="">Choose…</option>`+list.map(u=>`<option value="${esc(u)}">${esc(u)}</option>`).join("")+`<option value="__other">Other (type the name)</option>`;setUnit(cur)}
 function renderForm(){$("fields").innerHTML=FIELDS[S.type].map(([k,l])=>`<label>Current number of ${l}<input type="number" min="0" step="1" inputmode="numeric" id="f_${k}"></label>`).join("");renderUnitList()}
 function showTab(){$("sec-report").hidden=S.tab!=="report";$("sec-board").hidden=S.tab!=="board";
   document.querySelectorAll("[data-tab]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.tab===S.tab))}
@@ -237,7 +242,7 @@ async function load(m){
     R=r.reports;$("gate").hidden=true;renderView();renderUnitList();renderBoard();status(m||"Reports are up to date.")}
   catch(e){status("Can’t reach the server. Check your connection and the web app link.",1)}}
 async function submitReport(){
-  const t=$("r_type").value,F=FIELDS[t],name=$("r_name").value.trim(),email=$("r_email").value.trim(),unit=$("r_unit").value.trim(),date=$("r_date").value,y=$("r_year").value,mo=+$("r_month").value;
+  const t=$("r_type").value,F=FIELDS[t],name=$("r_name").value.trim(),email=$("r_email").value.trim(),unit=getUnit(),date=$("r_date").value,y=$("r_year").value,mo=+$("r_month").value;
   const v={};let bad=!name||!/^\S+@\S+\.\S+$/.test(email)||!unit||!date||!(+y>2000);
   F.forEach(([k])=>{const n=num($("f_"+k).value);if(n==null||n<0||!Number.isInteger(n))bad=true;v[k]=n});
   if(bad){$("fmsg").textContent="Please fill in every field: your name, a valid email, your community or ministry, the dates, and a whole number (0 or more) for each category.";return}
@@ -253,7 +258,8 @@ async function submitReport(){
   catch(e){status("Couldn’t submit. Check your connection and try again.",1)}}
 
 document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{S.tab=b.dataset.tab;showTab();save()});
-$("r_type").onchange=e=>{S.type=e.target.value;$("r_unit").value="";renderForm()};
+$("r_type").onchange=e=>{S.type=e.target.value;$("r_unitsel").value="";$("r_unit").value="";renderForm();setUnit("")};
+$("r_unitsel").onchange=e=>{$("r_otherwrap").hidden=e.target.value!=="__other";if(e.target.value==="__other")$("r_unit").focus()};
 $("tf").onchange=e=>{S.tf=e.target.value;S.per=Math.min(S.per,PN[S.tf]);renderPeriod();renderBoard();save()};
 $("yr").onchange=e=>{S.y=+e.target.value||S.y;renderBoard();save()};
 $("per").onchange=e=>{S.per=+e.target.value;renderBoard();save()};
@@ -262,10 +268,10 @@ $("view").onchange=e=>{S.view=e.target.value;renderBoard();save()};
 $("unlock").onclick=()=>{const c=$("code").value.trim();if(!c)return;S.code=c;save();load()};
 $("submit").onclick=submitReport;$("reload").onclick=()=>load();
 
-$("r_name").value=S.name;$("r_email").value=S.email;$("r_type").value=S.type;$("r_unit").value=S.unit;
+$("r_name").value=S.name;$("r_email").value=S.email;$("r_type").value=S.type;
 $("r_date").value=localDate();$("r_year").value=NOW.getFullYear();
 $("r_month").innerHTML=MN.map((m,i)=>`<option value="${i}">${m}</option>`).join("");$("r_month").value=NOW.getMonth();
-renderForm();renderPeriod();renderView();showTab();renderBoard();load();
+renderForm();setUnit(S.unit);renderPeriod();renderView();showTab();renderBoard();load();
 if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
 </body>
